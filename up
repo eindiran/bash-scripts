@@ -1,18 +1,28 @@
 ## up -- cd up the directory structure without having to type ../ a billion times
 ## Author -- Elliott Indiran
-## Feb 26, 2016
+## Date -- Feb 26, 2016
+## Version -- 1.1
+VERSION="1.1"
 
 ## IMPORTANT: For this script to work, it must be sourced to the shell, otherwise it will execute in a subshell and when you exit the subshell you wont have moved anywhere!
 ## Either add "alias up='source up'" to your .bashrc or run the command as . up [...] or source up [...]
 
+print_version () {
+    version_info="up -- Version number: "
+    echo $version_info$VERSION
+    echo
+    exit
+}
+
 usage () {
-    echo -e "\nUsage: up [ -h || I || -m || -r || -b]"
+    echo -e "\nUsage: up [ -h || -v|| I || -m || -r || -b]"
     echo -ne "\nMove up I directories. Equivalent "
     echo -ne "to \"cd I*(../)\". Running the bare "
     echo -ne "command(\"up\") is equivalent to \"up 1\""
     echo -e ", in turn equivalent to \"cd ../\"."
     echo -e "\nOptional arguments:"
     echo -e "\t-h\t\tShow this message and exit."
+    echo -e "\t-v\t\tPrint version number and exit."
     echo -ne "\n\t I\t\tNumber of directories to climb. "
     echo -e "Must be whole number." 
     ## Originally I had to be <= num dir between current dir and / 
@@ -45,6 +55,10 @@ if [[ "$#" -eq 1 ]] ; then
 
     		-h)
     		usage
+    		;;
+    		
+    		-v)
+    		print_version
     		;;
 
     		-m)
