@@ -15,39 +15,48 @@
 #
 # Author: Elliott Indiran
 # Date: March 21, 2016
-# Version: 1.0
-VERSION="p4-recent-add version 1.0"
+# Version: 1.1
+VERSION="1.1"
 #
+
+print_version () {
+    version_info="p4-recent-add -- Version number: "
+    echo
+    echo $version_info$VERSION
+	echo
+    exit
+}
+
+usage () {
+    echo
+	echo "-----------------------------------------------------------"
+	echo "			p4-recent-add"
+    echo "-----------------------------------------------------------"
+    echo
+    echo "Recursively add all files in the N most recently touched"
+    echo "directories in current directory, excluding ./ and ../"
+    echo
+    echo "-----------------------------------------------------------"
+    echo "			Usage:"
+    echo "-----------------------------------------------------------"
+    echo
+    echo "p4-recent-add -h ----> Display this usage message and exit."
+    echo
+    echo "p4-recent-add [N] ----> Recursively add files to p4 from"
+    echo "                        the N most recently changed" 
+    echo "                        directories. If $1 is not provided,"
+    echo "                        N=1."
+    echo
+    echo "p4-recent-add -v ----> Display version number and exit." 
+    echo
+    exit
+}
 
 if [[ $1 ]] ; then
     if [ $1 = "-h" ] ; then
-    	echo
-    	echo "-----------------------------------------------------------"
-    	echo "			p4-recent-add"
-    	echo "-----------------------------------------------------------"
-    	echo
-    	echo "Recursively add all files in the N most recently touched"
-    	echo "directories in current directory, excluding ./ and ../"
-    	echo
-    	echo "-----------------------------------------------------------"
-    	echo "			Usage:"
-    	echo "-----------------------------------------------------------"
-    	echo
-    	echo "p4-recent-add -h ----> Display this usage message and exit."
-    	echo
-    	echo "p4-recent-add [N] ----> Recursively add files to p4 from"
-    	echo "                        the N most recently changed" 
-    	echo "                        directories. If $1 is not provided,"
-    	echo "                        N=1."
-    	echo
-    	echo "p4-recent-add -v ----> Display version number and exit." 
-    	echo
-    	exit
+        usage
     elif [ $1 = "-v" ] ; then
-    	echo
-    	echo $VERSION
-    	echo
-    	exit
+        print_version
     fi
     num=$1
 else
