@@ -1,0 +1,5 @@
+#!/bin/bash
+# p4-cd-add
+# Add files from current directory recursively to p4
+# This works well both as a script in /usr/local/[s]bin and as an alias
+find . -type f -print | p4 -x - add
