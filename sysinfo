@@ -1,0 +1,109 @@
+#!/bin/bash
+## -------------------------------------------------------------------------- ##
+## sysinfo -- displays basic system info in an aesthetic, human readable format
+## GNU/Linux && OS-X version -- For Anna :3
+## Author -- Elliott Indiran
+## Date -- Feb 24, 2016
+## -------------------------------------------------------------------------- ##
+usage () {
+	echo -e "\nUsage: sysinfo [-h] [-r || -g]"
+	echo -ne "\nDisplay basic system info in an aesthetic," 
+	echo -e " human readable format."
+	echo -e "\nOptional arguments:"
+	echo -e "\t-h\t\tShow this message and exit."
+	echo -e "\t-r\t\tChange display color from cyan to red."
+	echo -e "\t-g\t\tChange display color from cyan to grey.\n"
+	}
+## -------------------------------------------------------------------------- ##
+zero=0
+one=1
+## -------------------------------------------------------------------------- ##
+if [[ "$#" -eq "$zero" ]] ; then ## No parameters, begin immediately in cyan
+	SET_COLOR=6
+elif [[ "$#" -ne "$one" ]] ; then ## illegal number of arguments; max = 1
+	usage
+	exit
+elif [[ "$1" = "-h" ]] ; then
+	usage
+	exit
+elif [[ "$1" = "-r" ]] ; then ## color set to red
+	SET_COLOR=1
+elif [[ "$1" = "-g" ]] ; then ## color set to greyish-white
+	SET_COLOR=7
+else  ## catch if $1 is an illegal param (ie not 'h', 'g', or 'r')
+	usage
+	exit
+fi
+## -------------------------------------------------------------------------- ##
+if [[ $OSTYPE =~ ^darwin ]] ; then
+	CODENAME=$(grep -oE 'SOFTWARE LICENSE AGREEMENT FOR OS X.*[A-Z]' '/System/Library/CoreServices/Setup Assistant.app/Contents/Resources/en.lproj/OSXSoftwareLicense.rtf' | awk -F 'OS X ' '{print $NF}') 
+	## Special thanks to some random guy on Stack overflow for the above (somewhat) terrifying regex
+	CODENAME=$(echo "$CODENAME" | awk '{print tolower($0)}' | sed  's/^\(.\)/\U\1/') 
+	## Input is all caps --> turn to lc in awk --> use sed to capitalize just first letter: YOSIMITE > yosimite > Yosimite
+	## Alternate regex for GNU sed 's/./\u&/'
+	KERNEL=$(uname) ## "Darwin"
+	KERNEL_NUMBER=$(uname -r)
+	RELEASE=$(sw_vers -productVersion) 
+	## Note that $RELEASE != $KERNEL_NUMBER
+	OS=$(sw_vers -productName)
+elif [[ $OSTYPE =~ ^linux-gnu ]] ; then
+	CODENAME=$(lsb_release -c | awk '$2 { print $2 }')
+	KERNEL=`uname` ## Linux: originally $OS was set as `uname`, which was changed to reduced the wailing of RMS
+	KERNEL_NUMBER=$(uname -r | sed -e 's/\-.*$//')
+	## The previous regex 's/\(.x86_64\)*$//g' removed the arch info, leaving other detritus
+	## This version reports only the Kernel number
+	RELEASE=$(lsb_release -r | awk '$2 { print $2 }')
+	OS=$(uname -a | awk '$15 { print $15 }') 
+	## Displays OS name as 'GNU/Linux'. So politically correct.
+	DISTRO=$(lsb_release -i | awk '$3 { print $3 }')	
+else
+	echo "Thou shalt not use a non-*nix system!" 
+	## TODO add BSD support so this message isn't just vaguely rude
+	exit
+fi
+## -------------------------------------------------------------------------- ##
+ARCH=$(arch)
+USER=$(whoami)
+COMPUTER=$(uname -a | awk '$2 { print $2 }') 
+## User defined name of local machine
+## -------------------------------------------------------------------------- ##
+tput setaf $SET_COLOR
+echo -e "\n\t--------------------------"
+echo -ne "\t----"
+tput bold
+echo -ne "System Information"
+tput sgr0
+tput setaf $SET_COLOR
+echo -e "----"
+echo -e "\t--------------------------"
+tput bold
+echo -ne "\tOS:\t\t"
+echo $OS
+echo -ne "\tArch:\t\t"
+echo $ARCH
+echo -ne "\tKernel:\t\t"
+echo $KERNEL
+echo -ne "\tKernel Number:\t"
+echo $KERNEL_NUMBER
+if [[ $OSTYPE =~ linux-gnu ]] ; then
+	echo -ne "\tDistro:\t\t"
+	echo $DISTRO
+	## No concept of distro/something similar for mac
+fi
+echo -ne "\tRelease:\t"
+echo $RELEASE
+echo -ne "\tCodename:\t"
+echo $CODENAME
+echo -ne "\tSystem name:\t"
+echo $COMPUTER
+echo -ne "\tUser:\t\t"
+echo $USER
+tput sgr0
+tput setaf $SET_COLOR
+echo -e "\t--------------------------"
+echo -e "\t--------------------------"
+echo
+## -------------------------------------------------------------------------- ##
+tput sgr0 ## Make sure to wipe up the mess when you leave!
+exit
+## -------------------------------------------------------------------------- ##
