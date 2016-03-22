@@ -50,16 +50,13 @@ fi
 
 if [[ $OSTYPE =~ ^darwin ]] ; then
 	CODENAME=$(grep -oE 'SOFTWARE LICENSE AGREEMENT FOR OS X.*[A-Z]' '/System/Library/CoreServices/Setup Assistant.app/Contents/Resources/en.lproj/OSXSoftwareLicense.rtf' | awk -F 'OS X ' '{print $NF}')
-	CODENAME=$(echo "$CODENAME" | awk '{print tolower($0)}' | sed 's/./\u&/')
-	## Use regex 's/^\(.\)/\U\1/' for non-GNU sed. 
-	## TODO Commented line immediately above is deprecated regex, fix needed
-	## As it fails to capitalize first letter of CODENAME; appends 'U' instead
-	## Use regex 's/./\u&/' for GNU sed
+	CODENAME=$(echo "$CODENAME" | awk '{print tolower($0)}' | sed 's/[^ _-]*/\u&/g')
+	## Capitalize first letter of codename only
 	KERNEL=$(uname)
 	KERNEL_NUMBER=$(uname -r)
 	RELEASE=$(sw_vers -productVersion)
 	## RELEASE=$(uname -a | awk '$3 { print $3}') 
-	## Much less elegant way using awk and uname
+	## Much less pretty way using awk and uname
 	OS=$(sw_vers -productName)
 elif [[ $OSTYPE =~ ^linux-gnu ]] ; then
 	KERNEL=`uname`
