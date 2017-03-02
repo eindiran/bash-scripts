@@ -13,6 +13,7 @@ do
             # Print usage info when a help flag is used
             printf "\nUsage:\tcurrenttime [--oz]\n\tcurrenttime --help || currenttime -h\n\n"
             printf "Args:\tnone: Return the local time\n\t--oz: Return time in Queensland\n"
+            printf "\t--date || -d: Append the current date to the printed message\n"
             printf "\t--help || -h: Print this message and exit\n\n"
             exit 0
             ;;
