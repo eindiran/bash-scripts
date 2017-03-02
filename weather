@@ -1,0 +1,59 @@
+#!/bin/bash
+# weather
+# Fetch the local weather
+# Author: <eindira@promptu.com>
+
+TEMP=false
+OZ=false
+WEEK=false
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+    case $key in
+        --help|-h)
+            # Print usage infor when a help flag is used
+            # Once printed, exit
+            printf "\nUsage:\tweather [--oz] [--temp | -t]\n\n"
+            printf "Args:\tnone: Print today's weather in MP\n\t--oz: Return weather in Gold Coast\n"
+            printf "\t--temp || -t: Return only the temp\n"
+            printf "\t--full || -f: Show the full week's weather\n"
+            printf "\t--help || -h: Print this message and exit\n\n"
+            exit 0
+            ;;
+        --oz)
+            # Set OZ to true if the --oz flag is found
+            OZ=true
+            ;;
+        --temp|-t)
+            # Set TEMP to true
+            TEMP=true
+            ;;
+        --full|-f)
+            # Set WEEK to true
+            WEEK=true
+            ;;
+        *)
+            # Unkown option
+            printf "Unknown Option: \"%s\"\n" "$key"
+            ;;
+    esac
+    shift
+done
+
+if [ $OZ = true ] ; then
+    if [ $TEMP = true ] ; then
+        curl -s wttr.in/gold_coast | grep "°F" | head -n 1 | awk {'print $(NF-1) " " $NF'}
+    elif [ $WEEK = false ] ; then
+        curl -s wttr.in/gold_coast | head -n 7
+    else
+        curl -s wttr.in/gold_coast
+    fi
+else
+    if [ $TEMP = true ] ; then
+        curl -s wttr.in/menlo_park | grep "°F" | head -n 1 | awk {'print $(NF-1) " " $NF'}
+    elif [ $WEEK = false ] ; then
+        curl -s wttr.in/menlo_park | head -n 7
+    else
+        curl -s wttr.in/menlo_park
+    fi
+fi
