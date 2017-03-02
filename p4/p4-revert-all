@@ -1,0 +1,16 @@
+#!/bin/bash
+# p4-revert-all
+# Close and revert all files opened in the current directory in p4
+# Author: eindiran@promptu.com
+
+p4_opened=$(p4 opened ...)
+
+if [[ $p4_opened == "... - file(s) not opened on this client." ]] ; then
+    echo "No files opened here. Nothing to revert."
+    exit 0
+else
+    opened_files=$(echo "$p4_opened" | awk {'print $1'} | cut -d "#" -f1)
+    # Use p4 opened to get files, awk to strip them to just their p4 paths
+    # Then use cut to remove the revision numbers 
+    p4 revert $opened_files
+fi

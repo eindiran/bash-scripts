@@ -1,0 +1,118 @@
+#!/bin/bash
+# -------------------------------------------------------------------------- #
+## sysinfo -- displays basic system info in an aesthetic, human readable format
+## Version -- 1.1 
+## Supports GNU/Linux && OS-X
+## Author -- Elliott Indiran
+## Date -- Feb 24, 2016
+
+VERSION='1.1'
+
+usage () {
+	echo -e "\nUsage: sysinfo [-h || -v] [-r || -g]"
+	echo -ne "\nDisplay basic system info in an aesthetic," 
+	echo -e " human-readable format."
+	echo -e "Currently, OS-X and Linux-based systems are supported."
+	echo -e "\nOptional arguments:"
+	echo -e "\t-h\t\tShow this message and exit."
+	echo -e "\t-v\t\tPrint version number and exit."
+	echo -e "\t-r\t\tChange display color from cyan to red."
+	echo -e "\t-g\t\tChange display color from cyan to grey.\n"
+	}
+
+zero=0
+one=1
+
+if [[ "$#" -eq "$zero" ]] ; then
+	SET_COLOR=6
+elif [[ "$#" -ne "$one" ]] ; then ## illegal number of arguments
+	usage
+	exit
+elif [[ "$1" = "-h" ]] ; then
+	usage
+	exit
+elif [[ "$1" = "-v" ]] ; then
+	version_info="sysinfo -- Version number: "
+	echo
+	echo -e $version_info$VERSION
+	## echo "Display basic system info in an aesthetic, human-readable format."
+	## echo "Support for OS-X and Linux-based systems."
+	echo
+	exit
+elif [[ "$1" = "-r" ]] ; then
+	SET_COLOR=1
+elif [[ "$1" = "-g" ]] ; then
+	SET_COLOR=7
+else  ## catch if $1 is an illegal param
+	usage
+	exit
+fi
+
+if [[ $OSTYPE =~ ^darwin ]] ; then
+	CODENAME=$(grep -oE 'SOFTWARE LICENSE AGREEMENT FOR OS X.*[A-Z]' '/System/Library/CoreServices/Setup Assistant.app/Contents/Resources/en.lproj/OSXSoftwareLicense.rtf' | awk -F 'OS X ' '{print $NF}')
+	CODENAME=$(echo "$CODENAME" | awk '{print tolower($0)}' | sed 's/[^ _-]*/\u&/g')
+	## Capitalize first letter of codename only
+	KERNEL=$(uname)
+	KERNEL_NUMBER=$(uname -r)
+	RELEASE=$(sw_vers -productVersion)
+	## RELEASE=$(uname -a | awk '$3 { print $3}') 
+	## Much less pretty way using awk and uname
+	OS=$(sw_vers -productName)
+elif [[ $OSTYPE =~ ^linux-gnu ]] ; then
+	KERNEL=`uname`
+	KERNEL_NUMBER=$(uname -r | sed -e 's/\-.*$//')
+	## The previous regex 's/\(.x86_64\)*$//g' only removed the arch info
+	## This version reports the only actual Kernel number
+	## OS=$(uname) # Displays OS name as 'Linux'. Stallman wept.
+	OS=$(uname -a | awk '$15 { print $15 }') 
+	## Displays OS name as 'GNU/Linux'.
+	DISTRO=$(lsb_release -i | awk '$3 { print $3 }')
+	CODENAME=$(lsb_release -c | awk '$2 { print $2 }')
+	RELEASE=$(lsb_release -r | awk '$2 { print $2 }')	
+else
+	echo -e "Your Operating system is not currently supported.\n"
+	## TODO add BSD support. Windows will not be supported.
+	exit
+fi
+
+ARCH=$(arch)
+USER=$(whoami)
+COMPUTER=$(uname -a | awk '$2 { print $2 }')
+
+tput setaf $SET_COLOR
+echo -e "\n\t--------------------------"
+echo -ne "\t----"
+tput bold
+echo -ne "System Information"
+tput sgr0
+tput setaf $SET_COLOR
+echo -e "----"
+echo -e "\t--------------------------"
+tput bold
+echo -ne "\tOS:\t\t"
+echo $OS
+echo -ne "\tArch:\t\t"
+echo $ARCH
+echo -ne "\tKernel:\t\t"
+echo $KERNEL
+echo -ne "\tKernel Number:\t"
+echo $KERNEL_NUMBER
+if [[ $OSTYPE =~ linux-gnu ]] ; then
+	echo -ne "\tDistro:\t\t"
+	echo $DISTRO
+fi
+echo -ne "\tRelease:\t"
+echo $RELEASE
+echo -ne "\tCodename:\t"
+echo $CODENAME
+echo -ne "\tSystem name:\t"
+echo $COMPUTER
+echo -ne "\tUser:\t\t"
+echo $USER
+tput sgr0
+tput setaf $SET_COLOR
+echo -e "\t--------------------------"
+echo -e "\t--------------------------"
+echo
+tput sgr0
+exit
