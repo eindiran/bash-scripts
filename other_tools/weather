@@ -2,6 +2,13 @@
 # weather
 # Fetch the local weather
 # Author: <eindira@promptu.com>
+# Usage:    weather [--oz] [--temp | -t]
+#
+# Args: none: Print today's weather in MP
+#       --oz: Return weather in Gold Coast
+#       --temp || -t: Return only the temp
+#       --full || -f || --week || -w: Show the full week's weather
+#       --help || -h: Print this message and exit
 
 TEMP=false
 OZ=false
