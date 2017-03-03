@@ -16,7 +16,7 @@ do
             printf "\nUsage:\tweather [--oz] [--temp | -t]\n\n"
             printf "Args:\tnone: Print today's weather in MP\n\t--oz: Return weather in Gold Coast\n"
             printf "\t--temp || -t: Return only the temp\n"
-            printf "\t--full || -f: Show the full week's weather\n"
+            printf "\t--full || -f || --week || -w: Show the full week's weather\n"
             printf "\t--help || -h: Print this message and exit\n\n"
             exit 0
             ;;
@@ -28,7 +28,7 @@ do
             # Set TEMP to true
             TEMP=true
             ;;
-        --full|-f)
+        --full|-f|--week|-w)
             # Set WEEK to true
             WEEK=true
             ;;
@@ -42,16 +42,20 @@ done
 
 if [ $OZ = true ] ; then
     if [ $TEMP = true ] ; then
+        currenttime --oz --date
         curl -s wttr.in/gold_coast | grep "°F" | head -n 1 | awk {'print $(NF-1) " " $NF'}
     elif [ $WEEK = false ] ; then
+        currenttime --oz --date
         curl -s wttr.in/gold_coast | head -n 7
     else
         curl -s wttr.in/gold_coast
     fi
 else
     if [ $TEMP = true ] ; then
+        currenttime --date
         curl -s wttr.in/menlo_park | grep "°F" | head -n 1 | awk {'print $(NF-1) " " $NF'}
     elif [ $WEEK = false ] ; then
+        currenttime --date
         curl -s wttr.in/menlo_park | head -n 7
     else
         curl -s wttr.in/menlo_park
