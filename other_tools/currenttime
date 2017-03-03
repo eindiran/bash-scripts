@@ -1,8 +1,17 @@
 #!/bin/bash
 # currenttime
-# Print the current time converted to the 12-hour clock.
+# Print the current time [default = converted to the 12-hour clock.]
 # Author: <eindiran@promptu.com>
+# Usage:  currenttime [--oz]
+#         currenttime --help || currenttime -h
+#
+# Args:   none: Return the local time
+#         --oz: Return time in Queensland
+#         --date || -d: Append the current date to the printed message
+#         --24: Use 24-hour time
+#         --help || -h: Print this message and exit
 
+TWENTYFOUR=false
 OZ=false
 DATE=false
 while [[ $# -gt 0 ]]
@@ -14,8 +23,13 @@ do
             printf "\nUsage:\tcurrenttime [--oz]\n\tcurrenttime --help || currenttime -h\n\n"
             printf "Args:\tnone: Return the local time\n\t--oz: Return time in Queensland\n"
             printf "\t--date || -d: Append the current date to the printed message\n"
+            printf "\t--24: Use 24-hour time\n"
             printf "\t--help || -h: Print this message and exit\n\n"
             exit 0
+            ;;
+        --24)
+            # Set TWENTYFOUR to true if the --24 flag is found
+            TWENTYFOUR=true
             ;;
         --oz)
             # Set OZ to true if the --oz flag is found
@@ -47,5 +61,9 @@ else
     fi
 fi
 
-# Format the time and date in a pleasing way, using a ugly one-liner
-echo $C_TIME | awk {'print $4'} | awk -F':' {'if($1 > 12) {printf "%s:%s:%s PM\t", $1-12, $2, $3} else if($1 == 12) {printf "12:%s:%s PM\t", $2, $3} else {printf "%s:%s:%s AM\t", $1, $2, $3}; print "'$C_DATE'"'}
+# Format the time and date in a pleasing way, using one of two ugly one-liners
+if [ $TWENTYFOUR = true ] ; then
+    echo $C_TIME | awk {'printf "%s\t", $4; print "'$C_DATE'"'}
+else
+    echo $C_TIME | awk {'print $4'} | awk -F':' {'if($1 > 12) {printf "%s:%s:%s PM\t", $1-12, $2, $3} else if($1 == 12) {printf "12:%s:%s PM\t", $2, $3} else {printf "%s:%s:%s AM\t", $1, $2, $3}; print "'$C_DATE'"'}
+fi
