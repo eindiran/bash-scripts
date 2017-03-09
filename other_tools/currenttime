@@ -2,18 +2,20 @@
 # currenttime
 # Print the current time [default = converted to the 12-hour clock.]
 # Author: <eindiran@promptu.com>
-# Usage:  currenttime [--oz]
+# Usage:  currenttime [--loc LOC] [--date] [--dow] [--24]
 #         currenttime --help || currenttime -h
 #
 # Args:   none: Return the local time
-#         --oz: Return time in Queensland
+#         --oz: Return time in Queensland # TODO: Fix this
 #         --date || -d: Append the current date to the printed message
 #         --24: Use 24-hour time
+#         --dow: Append the current day of the week to the printed message
 #         --help || -h: Print this message and exit
 
 TWENTYFOUR=false
-OZ=false
+LOCATION=''
 DATE=false
+DOW=false
 while [[ $# -gt 0 ]]
 do
     key="$1"
@@ -21,9 +23,10 @@ do
         --help|-h)
             # Print usage info when a help flag is used
             printf "\nUsage:\tcurrenttime [--oz]\n\tcurrenttime --help || currenttime -h\n\n"
-            printf "Args:\tnone: Return the local time\n\t--oz: Return time in Queensland\n"
+            printf "Args:\tnone: Return the local time\n\t--oz: Return time in Queensland\n" # TODO: Fix this
             printf "\t--date || -d: Append the current date to the printed message\n"
             printf "\t--24: Use 24-hour time\n"
+            printf "\t--dow: Append the current day of the week to the printed message\n"
             printf "\t--help || -h: Print this message and exit\n\n"
             exit 0
             ;;
@@ -31,13 +34,20 @@ do
             # Set TWENTYFOUR to true if the --24 flag is found
             TWENTYFOUR=true
             ;;
-        --oz)
-            # Set OZ to true if the --oz flag is found
-            OZ=true
+        --loc|-l)
+            # Set location argument to the two letter code given immediately after
+            # The current set of codes:
+            # {OZ:Queensland, MP:Menlo Park, CH:Chicago, NY:New York, AM:Amsterdam, LO:London, TO:Tokyo}
+            shift
+            LOCATION="$1"
             ;;
         --date|-d)
             # Set DATE to true if either the --date or the -d flags are found
             DATE=true
+            ;;
+        --dow)
+            # Set DOW to true if the --dow flag is found
+            DOW=true
             ;;
         *)
             # Unkown option
@@ -47,23 +57,60 @@ do
     shift
 done
 
-C_DATE=''
-if [ $OZ = true ] ; then
-    # Set timezone to Queensland's if OZ is true
-    C_TIME=$(TZ=Australia/Queensland date)
-    if [ $DATE = true ] ; then
-        C_DATE=$(TZ=Australia/Queensland date -I)
+C_DATE_DOW=''
+if [ "$LOCATION" = "" ] ; then # If location was not given, get local time
+    C_TIME=$(date)
+    if [ "$DATE" = true ] ; then
+        C_DATE=$(date -I)
+        C_DATE_DOW="$C_DATE\t"
+    fi
+    if [ "$DOW" = true ] ; then
+        C_DOW=$(date | awk {'print $1'})
+        C_DATE_DOW="$C_DATE_DOW$C_DOW"
     fi
 else
-    C_TIME=$(date)
-    if [ $DATE = true ] ; then
-        C_DATE=$(date -I)
-    fi
+    TZ_string=''
+    case $LOCATION in
+        OZ)
+            TZ_string="TZ=Australia/Queensland"
+            ;;
+        MP)
+            TZ_string="TZ=America/Los_Angeles"
+            ;;
+        CH)
+            TZ_string="TZ=America/Chicago"
+            ;;
+        NY)
+            TZ_string="TZ=America/New_York"
+            ;;
+        AM)
+            TZ_string="TZ=Europe/Amsterdam"
+            ;;
+        LO)
+            TZ_string="TZ=Europe/London"
+            ;;
+        TO)
+            TZ_string="TZ=Asia/Tokyo"
+            ;;
+        *)
+            printf "Unknown Location: \"%s\"\n" "$LOCATION"
+            exit 1
+            ;;
+    esac
+    C_TIME=$(env $TZ_string date)
+            if [ "$DATE" = true ] ; then
+                C_DATE=$(env $TZ_string date -I)
+                C_DATE_DOW="$C_DATE\t"
+            fi
+            if [ "$DOW" = true ] ; then
+                C_DOW=$(env $TZ_string date | awk {'print $1'})
+                C_DATE_DOW="$C_DATE_DOW$C_DOW"
+            fi
 fi
 
 # Format the time and date in a pleasing way, using one of two ugly one-liners
 if [ $TWENTYFOUR = true ] ; then
-    echo $C_TIME | awk {'printf "%s\t", $4; print "'$C_DATE'"'}
+    echo $C_TIME | awk {'printf "%s\t", $4; print "'$C_DATE_DOW'"'}
 else
-    echo $C_TIME | awk {'print $4'} | awk -F':' {'if($1 > 12) {printf "%s:%s:%s PM\t", $1-12, $2, $3} else if($1 == 12) {printf "12:%s:%s PM\t", $2, $3} else {printf "%s:%s:%s AM\t", $1, $2, $3}; print "'$C_DATE'"'}
+    echo $C_TIME | awk {'print $4'} | awk -F':' {'if($1 > 12) {printf "%s:%s:%s PM\t", $1-12, $2, $3} else if($1 == 12) {printf "12:%s:%s PM\t", $2, $3} else {printf "%s:%s:%s AM\t", $1, $2, $3}; print "'$C_DATE_DOW'"'}
 fi
