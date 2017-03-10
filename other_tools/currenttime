@@ -29,9 +29,11 @@ do
             printf "\nUsage:\tcurrenttime [--oz]\n\tcurrenttime --help || currenttime -h\n\n"
             printf "Args:\tnone: Return the local time\n"
             printf "\t--loc || -l <LOCATION>: Return the time in the specified location\n"
-            printf "\t<LOCATION> may be any of the following: {OZ, BR, SY, LA, SF, MP, SL, CH, NY, DC,"
-            printf " AM, LO, TO, KL, NO, IS, BJ, HK, MO, PR, PA, BE}\n"
-            printf "\tFor more information, use --timezones or -tz"
+            printf "\n\t<LOCATION> may be any of the following:\n"
+            printf "\t{OZ, BR, SY, LA, SF, MP, SL, CH, NY, DC,"
+            printf "\n\t AM, LO, TO, KL, NO, IS, BJ, HK, MO, PR,"
+            printf "\n\t PA, BE}\n"
+            printf "\n\tFor more information, use the --timezones or -tz flags\n"
             printf "\t--date || -d: Append the current date to the printed message\n"
             printf "\t--24: Use 24-hour time\n"
             printf "\t--dow: Append the current day of the week to the printed message\n"
@@ -40,7 +42,7 @@ do
             ;;
         --timezones|-tz)
             # Print timezone info when the timezone/tz flag is used
-            printf "currentime -- Available Timezones\n"
+            printf "currenttime -- Available Timezones\n"
             printf "=================================\nThe timezones are as follows:\n"
             printf "\tOZ:Queensland, BR:Brisbane, SY:Sydney, LA:LA, SF:San Francisco\n"
             printf "\tMP:Menlo Park, SL: Salt Lake City, CH:Chicago, NY:New York, DC:Washington DC\n"
