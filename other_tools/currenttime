@@ -6,16 +6,20 @@
 #         currenttime --help || currenttime -h
 #
 # Args:   none: Return the local time
-#         --oz: Return time in Queensland # TODO: Fix this
+#         --loc || -l <LOCATION>: Return the time in the specified location
+#         <LOCATION> may be any of the following: {OZ, MP, CH, NY, AM, LO, TO}
 #         --date || -d: Append the current date to the printed message
 #         --24: Use 24-hour time
 #         --dow: Append the current day of the week to the printed message
 #         --help || -h: Print this message and exit
 
-TWENTYFOUR=false
+# Initialize variables to hold flag values
 LOCATION=''
+TWENTYFOUR=false
 DATE=false
 DOW=false
+
+# Read the flags/arguments to the script
 while [[ $# -gt 0 ]]
 do
     key="$1"
@@ -23,7 +27,10 @@ do
         --help|-h)
             # Print usage info when a help flag is used
             printf "\nUsage:\tcurrenttime [--oz]\n\tcurrenttime --help || currenttime -h\n\n"
-            printf "Args:\tnone: Return the local time\n\t--oz: Return time in Queensland\n" # TODO: Fix this
+            printf "Args:\tnone: Return the local time\n"
+            printf "\t--loc || -l <LOCATION>: Return the time in the specified location\n"
+            printf "\t<LOCATION> may be any of the following: {OZ, MP, CH, NY, AM, LO, TO}\n"
+            # TODO: Add new timezones to the above line
             printf "\t--date || -d: Append the current date to the printed message\n"
             printf "\t--24: Use 24-hour time\n"
             printf "\t--dow: Append the current day of the week to the printed message\n"
@@ -36,7 +43,7 @@ do
             ;;
         --loc|-l)
             # Set location argument to the two letter code given immediately after
-            # The current set of codes:
+            # The current set of codes: # TODO: Add new timezones
             # {OZ:Queensland, MP:Menlo Park, CH:Chicago, NY:New York, AM:Amsterdam, LO:London, TO:Tokyo}
             shift
             LOCATION="$1"
@@ -74,8 +81,26 @@ else
         OZ)
             TZ_string="TZ=Australia/Queensland"
             ;;
+        QL)
+            TZ_string="TZ=Australia/Queensland"
+            ;;
+        SY)
+            TZ_string="TZ=Australia/Sydney"
+            ;;
+        LA)
+            TZ_string="TZ=America/Los_Angeles"
+            ;;
+        SF)
+            TZ_string="TZ=America/Los_Angeles"
+            ;;
         MP)
             TZ_string="TZ=America/Los_Angeles"
+            ;;
+        SL) # Salt Lake City
+            TZ_string="TZ=Navajo"
+            ;;
+        DE)
+            TZ_string="TZ=America/Denver"
             ;;
         CH)
             TZ_string="TZ=America/Chicago"
@@ -91,6 +116,33 @@ else
             ;;
         TO)
             TZ_string="TZ=Asia/Tokyo"
+            ;;
+        KL)
+            TZ_string="TZ=Asia/Kuala_Lumpur"
+            ;;
+        NO)
+            TZ_string="TZ=Asia/Novokuznetsk"
+            ;;
+        IS)
+            TZ_string="TZ=Asia/Istanbul"
+            ;;
+        BJ)
+            TZ_string="TZ=PRC"
+            ;;
+        HK)
+            TZ_string="TZ=Hongkong"
+            ;;
+        MO)
+            TZ_string="TZ=Europe/Moscow"
+            ;;
+        PR)
+            TZ_string="TZ=Europe/Prague"
+            ;;
+        PA)
+            TZ_string="TZ=Europe/Paris"
+            ;;
+        BE)
+            TZ_string="TZ=Europe/Berlin"
             ;;
         *)
             printf "Unknown Location: \"%s\"\n" "$LOCATION"
