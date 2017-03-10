@@ -49,20 +49,20 @@ done
 
 if [ $OZ = true ] ; then
     if [ $TEMP = true ] ; then
-        currenttime --oz --date
+        currenttime -l OZ --date --dow
         curl -s wttr.in/gold_coast | grep "°F" | head -n 1 | awk {'print $(NF-1) " " $NF'}
     elif [ $WEEK = false ] ; then
-        currenttime --oz --date
+        currenttime -l OZ --date --dow
         curl -s wttr.in/gold_coast | head -n 7
     else
         curl -s wttr.in/gold_coast
     fi
 else
     if [ $TEMP = true ] ; then
-        currenttime --date
+        currenttime -l MP --date --dow
         curl -s wttr.in/menlo_park | grep "°F" | head -n 1 | awk {'print $(NF-1) " " $NF'}
     elif [ $WEEK = false ] ; then
-        currenttime --date
+        currenttime -l MP --date --dow
         curl -s wttr.in/menlo_park | head -n 7
     else
         curl -s wttr.in/menlo_park
