@@ -29,12 +29,23 @@ do
             printf "\nUsage:\tcurrenttime [--oz]\n\tcurrenttime --help || currenttime -h\n\n"
             printf "Args:\tnone: Return the local time\n"
             printf "\t--loc || -l <LOCATION>: Return the time in the specified location\n"
-            printf "\t<LOCATION> may be any of the following: {OZ, MP, CH, NY, AM, LO, TO}\n"
-            # TODO: Add new timezones to the above line
+            printf "\t<LOCATION> may be any of the following: {OZ, BR, SY, LA, SF, MP, SL, CH, NY, DC,"
+            printf " AM, LO, TO, KL, NO, IS, BJ, HK, MO, PR, PA, BE}\n"
+            printf "\tFor more information, use --timezones or -tz"
             printf "\t--date || -d: Append the current date to the printed message\n"
             printf "\t--24: Use 24-hour time\n"
             printf "\t--dow: Append the current day of the week to the printed message\n"
             printf "\t--help || -h: Print this message and exit\n\n"
+            exit 0
+            ;;
+        --timezones|-tz)
+            # Print timezone info when the timezone/tz flag is used
+            printf "currentime -- Available Timezones\n"
+            printf "=================================\nThe timezones are as follows:\n"
+            printf "\tOZ:Queensland, BR:Brisbane, SY:Sydney, LA:LA, SF:San Francisco\n"
+            printf "\tMP:Menlo Park, SL: Salt Lake City, CH:Chicago, NY:New York, DC:Washington DC\n"
+            printf "\tAM:Amsterdam, LO:London, TO:Tokyo, KL:Kuala Lumpur, NO:Novokuznetsk, IS:Istanbul\n"
+            printf "\tBJ:Beijing, HK:Hong Kong, MO:Moscow, PR:Prague, PA:Paris, BE:Berlin\n\n"
             exit 0
             ;;
         --24)
@@ -43,8 +54,11 @@ do
             ;;
         --loc|-l)
             # Set location argument to the two letter code given immediately after
-            # The current set of codes: # TODO: Add new timezones
-            # {OZ:Queensland, MP:Menlo Park, CH:Chicago, NY:New York, AM:Amsterdam, LO:London, TO:Tokyo}
+            # The current set of codes:
+            # {OZ:Queensland, BR:Brisbane, SY:Sydney, LA:LA, SF:San Francisco, MP:Menlo Park,
+            #  SL: Salt Lake City, CH:Chicago, NY:New York, DC:Washington DC, AM:Amsterdam, LO:London,
+            #  TO:Tokyo, KL:Kuala Lumpur, NO:Novokuznetsk, IS:Istanbul, BJ:Beijing, HK:Hong Kong, MO:Moscow,
+            #  PR:Prague, PA:Paris, BE:Berlin}
             shift
             LOCATION="$1"
             ;;
@@ -81,8 +95,8 @@ else
         OZ)
             TZ_string="TZ=Australia/Queensland"
             ;;
-        QL)
-            TZ_string="TZ=Australia/Queensland"
+        BR)
+            TZ_string="TZ=Australia/Brisbane"
             ;;
         SY)
             TZ_string="TZ=Australia/Sydney"
@@ -106,6 +120,9 @@ else
             TZ_string="TZ=America/Chicago"
             ;;
         NY)
+            TZ_string="TZ=America/New_York"
+            ;;
+        DC)
             TZ_string="TZ=America/New_York"
             ;;
         AM)
