@@ -43,7 +43,7 @@ do
         --timezones|-tz)
             # Print timezone info when the timezone/tz flag is used
             printf "currenttime -- Available Timezones\n"
-            printf "=================================\nThe timezones are as follows:\n"
+            printf "==================================\nThe timezones are as follows:\n"
             printf "\tOZ:Queensland, BR:Brisbane, SY:Sydney, LA:LA, SF:San Francisco\n"
             printf "\tMP:Menlo Park, SL: Salt Lake City, CH:Chicago, NY:New York, DC:Washington DC\n"
             printf "\tAM:Amsterdam, LO:London, TO:Tokyo, KL:Kuala Lumpur, NO:Novokuznetsk, IS:Istanbul\n"
