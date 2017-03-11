@@ -5,14 +5,24 @@
 # Usage:    weather [--oz] [--temp | -t]
 #
 # Args: none: Print today's weather in MP
-#       --oz: Return weather in Gold Coast
+#       --loc || -l <LOCATION>: Print the weather near <LOCATION>
+#
+#       <LOCATION> may be any of the following:
+#       {OZ, BR, SY, LA, SF, MP, SL, CH, NY, DC,
+#        AM, LO, TO, KL, NO, IS, BJ, HK, MO, PR, 
+#        PA, BE}
+#
+#       Type 'weather --cities' for more information
+#
 #       --temp || -t: Return only the temp
 #       --full || -f || --week || -w: Show the full week's weather
 #       --help || -h: Print this message and exit
 
+#Init variables to hold flag values
 TEMP=false
-OZ=false
+LOCATION=""
 WEEK=false
+UNITS="?u"
 while [[ $# -gt 0 ]]
 do
     key="$1"
@@ -21,15 +31,32 @@ do
             # Print usage infor when a help flag is used
             # Once printed, exit
             printf "\nUsage:\tweather [--oz] [--temp | -t]\n\n"
-            printf "Args:\tnone: Print today's weather in MP\n\t--oz: Return weather in Gold Coast\n"
+            printf "Args:\tnone: Print today's weather in MP\n" # TODO Update to relfect loc changes
+            printf "\t--loc || -l <LOCATION>: Print the weather near <LOCATION>\n"
+            printf "\n\t<LOCATION> may be any of the following:\n"
+            printf "\t{OZ, BR, SY, LA, SF, MP, SL, CH, NY, DC,"
+            printf "\n\t AM, LO, TO, KL, NO, IS, BJ, HK, MO, PR,"
+            printf "\n\t PA, BE}\n\n"
+            printf "\tType 'weather --cities' for more information\n\n"
             printf "\t--temp || -t: Return only the temp\n"
             printf "\t--full || -f || --week || -w: Show the full week's weather\n"
             printf "\t--help || -h: Print this message and exit\n\n"
             exit 0
             ;;
-        --oz)
-            # Set OZ to true if the --oz flag is found
-            OZ=true
+        --cities)
+            printf "weather -- Available Cities\n"
+            printf "===========================\n"
+            printf "The available cities are:\n"
+            printf "\tOZ:Queensland, BR:Brisbane, SY:Sydney, LA:LA, SF:San Francisco\n"
+            printf "\tMP:Menlo Park, SL: Salt Lake City, CH:Chicago, NY:New York, DC:Washington DC\n"
+            printf "\tAM:Amsterdam, LO:London, TO:Tokyo, KL:Kuala Lumpur, NO:Novokuznetsk, IS:Istanbul\n"
+            printf "\tBJ:Beijing, HK:Hong Kong, MO:Moscow, PR:Prague, PA:Paris, BE:Berlin\n"
+            exit 0
+            ;;
+        --loc|-l)
+            # Set location argument to the two letter code given immediately after
+            shift
+            LOCATION="$1"
             ;;
         --temp|-t)
             # Set TEMP to true
@@ -39,6 +66,10 @@ do
             # Set WEEK to true
             WEEK=true
             ;;
+        --metric|-m|--celsius|-c)
+            # Set displayed units to metric/celsius
+            UNITS="?m"
+            ;;
         *)
             # Unkown option
             printf "Unknown Option: \"%s\"\n" "$key"
@@ -47,24 +78,108 @@ do
     shift
 done
 
-if [ $OZ = true ] ; then
-    if [ $TEMP = true ] ; then
-        currenttime -l OZ --date --dow
-        curl -s wttr.in/gold_coast | grep "°F" | head -n 1 | awk {'print $(NF-1) " " $NF'}
-    elif [ $WEEK = false ] ; then
-        currenttime -l OZ --date --dow
-        curl -s wttr.in/gold_coast | head -n 7
-    else
-        curl -s wttr.in/gold_coast
-    fi
+LOC_string=""
+
+if [ "$LOCATION" = "" ] ; then
+    LOC_string="wttr.in/menlo_park"
+    LOCATION="MP"
 else
-    if [ $TEMP = true ] ; then
-        currenttime -l MP --date --dow
-        curl -s wttr.in/menlo_park | grep "°F" | head -n 1 | awk {'print $(NF-1) " " $NF'}
-    elif [ $WEEK = false ] ; then
-        currenttime -l MP --date --dow
-        curl -s wttr.in/menlo_park | head -n 7
-    else
-        curl -s wttr.in/menlo_park
-    fi
+    case $LOCATION in
+        # Australia
+        OZ)
+            LOC_string="wttr.in/gold_coast"
+            ;;
+        GC)
+            LOC_string="wttr.in/gold_coast"
+            LOCATION="OZ"
+            ;;
+        BR)
+            LOC_string="wttr.in/brisbane"
+            ;;
+        SY)
+            LOC_string="wttr.in/sydney"
+            ;;
+        # California
+        LA)
+            LOC_string="wttr.in/los_angeles"
+            ;;
+        SF)
+            LOC_string="wttr.in/sf"
+            ;;
+        MP)
+            LOC_string="wttr.in/menlo_park"
+            ;;
+        # Rest of US
+        SL)
+            LOC_string="wttr.in/salt_lake_city"
+            ;;
+        DE)
+            LOC_string="wttr.in/denver"
+            ;;
+        CH)
+            LOC_string="wttr.in/chicago"
+            ;;
+        NY)
+            LOC_string="wttr.in/new_york"
+            ;;
+        DC)
+            LOC_string="wttr.in/washington_dc"
+            ;;
+        # Europe
+        AM)
+            LOC_string="wttr.in/amsterdam"
+            ;;
+        LO)
+            LOC_string="wttr.in/london"
+            ;;
+        PR)
+            LOC_string="wttr.in/prague"
+            ;;
+        PA)
+            LOC_string="wttr.in/paris"
+            ;;
+        BE)
+            LOC_string="wttr.in/berlin"
+            ;;
+        # Russia
+        MO)
+            LOC_string="wttr.in/moscow"
+            ;;
+        NO)
+            LOC_string="wttr.in/novokuznetsk"
+            ;;
+        # Asia
+        IS)
+            LOC_string="wttr.in/istanbul"
+            ;;
+        TO)
+            LOC_string="wttr.in/tokyo"
+            ;;
+        KL)
+            LOC_string="wttr.in/kuala_lumpur"
+            ;;
+        BJ)
+            LOC_string="wttr.in/beijing"
+            ;;
+        HK)
+            LOC_string="wttr.in/hong_kong"
+            ;;
+        # Not yet a supported location
+        *)
+            printf "Unknown Location: \"%s\"\n" "$LOCATION"
+            exit 1
+            ;;
+    esac
+fi
+
+LOC_string=$LOC_string+$UNITS
+
+if [ $TEMP = true ] ; then
+    currenttime -l $LOCATION --date --dow
+    curl -s $LOC_string | grep "°" | head -n 1 | awk {'print $(NF-1) " " $NF'}
+elif [ $WEEK = false ] ; then
+    currenttime -l $LOCATION --date --dow
+    curl -s $LOC_string | head -n 7
+else
+    curl -s $LOC_string
 fi
