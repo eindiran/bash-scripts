@@ -1,0 +1,209 @@
+#!/bin/bash
+# commits_this_week
+# Print out the commits to Perforce made by a particular user over the last week
+# Author: <eindiran@promptu.com>
+# Date: 2017-03-16
+
+DEBUG=false # Set this to true while debugging, false otherwise.
+LONG=false
+REPORT=false
+
+usage() {
+    printf "\ncommits_this_week"
+    printf "\n-------------------------------------------------------------------------------"
+    printf "\nA tool to print out the commits to"
+    printf "\np4 made by a particular user over the last week."
+    printf "\nUsage:"
+    printf "\n-------------------------------------------------------------------------------"
+    printf "\nLong Flags:\tcommits_this_week [--help] --user <U> [--file <F>] [--debug]"
+    printf "\nShort Flags:\tcommits_this_week [-h] -u <U> [-f <F>] [-db]\n\n"
+    exit 0
+}
+
+date_to_int() {
+    echo $1 | sed -e 's/-//g'
+}
+
+print_summary_stdout() {
+    if [ -z "$1" ] ; then
+        echo "No user recieved in fn print_summary_stdout. Cannot continue."
+        exit 1
+    fi
+    if [[ $DEBUG = true ]] ; then
+        printf "\nDebug statement for fn print_summary_to_stdout:\n\t\$1 (user) = %s\n" $1
+        printf "\t\$2 (num_commits) = %s\n" $2
+    fi
+    p4 changes -u $1 | head -n $2
+    # $1 = <USER>
+    # $2 = num_commits
+}
+
+print_full_stdout() {
+    if [ -z "$1" ] ; then
+        echo "No user recieved in fn print_full_stdout. Cannot continue."
+        exit 1
+    fi
+    if [[ $DEBUG = true ]] ; then
+        printf "\nDebug statement for fn print_full_stdout:\n\t\$1 (user) = %s\n" $1
+        printf "\t\$2 (num_commits) = %s\n" $2
+    fi
+    p4 changes -u $1 | head -n $2 | awk {'print $2'} | xargs p4 describe -s | sed -e '/^\s*$/d'
+    # $1 = <USER>
+    # $2 = num_commits
+    # Note that the call to 'p4 describe' uses the '-s' flag to suppress the diff of each file
+    # which would usually be wayyyy to much information to take in. Then sed removes all the black/ws-only
+    # lines, for improved compact-ness.
+}
+
+print_summary_to_file() {
+    if [ -z "$1" ] ; then
+        echo "No user recieved in fn print_summary_to_file. Cannot continue."
+        exit 1
+    fi
+    if [[ $DEBUG = true ]] ; then
+        printf "\nDebug statement for fn print_summary_to_file:\n\t\$1 (user) = %s\n" $1
+        printf "\t\$2 (num_commits) = %s\n" $2
+        printf "\t\$3 (output_filename) = %s\n\n" $3
+    fi
+    p4 changes -u $1 | head -n $2 > $3
+    # $1 = <USER>
+    # $2 = num_commits
+    # $3 = output filename
+}
+
+generate_full_weekly_p4_report() {
+    if [ -z "$1" ] ; then
+        echo "No user recieved in fn generate_full_weekly_p4_report. Cannot continue."
+        exit 1
+    fi
+    if [[ $DEBUG = true ]] ; then
+        printf "\nDebug statement for fn print_summary_to_file:\n\t\$1 (user) = %s\n" $1
+        printf "\t\$2 (num_commits) = %s\n" $2
+    fi
+    p4 changes -u $1 | head -n $2 | awk {'print $2'} | xargs p4 describe -s > tmp.report.p4.$1.$(date -I)
+    sed -e 's/^Change/=========================================================================\nChange/g' tmp.report.p4.$1.$(date -I) > report.p4.$1.$(date -I)
+    rm -f tmp.report.p4.$1.$(date -I)
+}
+
+get_commit_num() {
+    # $1 = <USER>
+    if [ -z "$1" ] ; then
+        echo "No user recieved in fn get_commit_num. Cannot continue."
+        exit 1
+    fi
+    commits=0
+    for i in $(p4 changes -u $1 | awk {'print $4'} | sed -e 's/\//-/g'); do
+        comp_i=$(date_to_int $i)
+        comp_week_ago=$(date_to_int $(date --date="7 days ago" -I))
+        if [ $comp_i -ge $comp_week_ago ] ; then
+            commits=$(( commits + 1 ))
+        fi
+    done
+    if [[ $DEBUG = true ]] ; then
+        printf "\nDebug statement for fn get_commit_num:\n\t\$commits = %d\n\n" $commits # DEBUG
+    fi
+    printf "%d\n" $commits
+}
+
+main() {
+    # $1 = <USER>
+    # $2 = <FILENAME> [optional]
+    user=$1
+    if [ -z "$user" ] ; then
+        echo "No user recieved in fn main. Cannot continue."
+        exit 1
+    fi
+    commits=$(get_commit_num $user)
+    # echo $commits
+    if [[ $REPORT = true ]] ; then
+        generate_full_weekly_p4_report $user $commits
+    elif [ $# -eq 1 ] ; then
+        if [[ $LONG = true ]] ; then
+            print_full_stdout $user $commits
+        else
+            echo # Add newlines before and after printing to stdout
+            # for purely aesthetic reasons
+            print_summary_stdout $user $commits
+            echo
+        fi
+    else
+        filename=$2
+        print_summary_to_file $user $commits $filename
+    fi
+    exit 0
+}
+
+eindiran_orig() {
+    # Original version of this program which worked only for myself.
+    commits=0
+    for i in $(p4 changes -u eindiran | awk {'print $4'} | sed -e 's/\//-/g'); do
+        comp_i=$(date_to_int $i)
+        comp_week_ago=$(date_to_int $(date --date="7 days ago" -I))
+        if [ $comp_i -ge $comp_week_ago ] ; then
+            commits=$(( commits + 1 ))
+        fi
+    done
+    p4 changes -u eindiran | head -n $commits
+}
+
+#####################################
+## EXECUTION OF SCRIPT STARTS HERE ##
+#####################################
+
+if [[ $DEBUG = true ]] ; then
+    # Maximize logging in debug mode
+    echo "DEBUG MODE ON. SETTING OUTPUT TO MAX VERBOSITY."
+    sleep 1
+    set -xv
+fi
+
+USER=""
+FILENAME=""
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+    case $key in
+        --help|-h)
+            usage
+            ;;
+        --user|-u)
+            # Set user to the name provided after this flag.
+            shift
+            USER=$1
+            ;;
+        --file|-f|--filename)
+            # Set output file to the name provided after this flag.
+            # This is optional: will write to stdout by default.
+            shift
+            FILENAME=$1
+            ;;
+        --debug|-db)
+            # Turns debugging on
+            DEBUG=true
+            # Maximize logging in debug mode
+            echo "DEBUG MODE ON. SETTING OUTPUT TO MAX VERBOSITY."
+            sleep 1
+            set -xv
+            ;;
+        --long|-l)
+            # Gets full info on changes
+            LONG=true
+            ;;
+        --report|-r)
+            # Generates a full report in current directory
+            REPORT=true
+            ;;
+        *)
+            # Unknown option...
+            printf "Unknown Option: \"%s\"\n" "$key"
+            ;;
+    esac
+    shift
+done
+
+if [ -z "$USER" ] ; then
+    echo "No user recieved. Cannot continue."
+    exit 1
+fi
+
+main $USER $FILENAME # Invoke main
