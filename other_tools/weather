@@ -31,7 +31,7 @@ do
             # Print usage infor when a help flag is used
             # Once printed, exit
             printf "\nUsage:\tweather [--oz] [--temp | -t]\n\n"
-            printf "Args:\tnone: Print today's weather in MP\n" # TODO Update to relfect loc changes
+            printf "Args:\tnone: Print today's weather in MP\n" # TODO Update to reflect loc changes
             printf "\t--loc || -l <LOCATION>: Print the weather near <LOCATION>\n"
             printf "\n\t<LOCATION> may be any of the following:\n"
             printf "\t{OZ, BR, SY, LA, SF, MP, SL, CH, NY, DC,"
@@ -89,79 +89,79 @@ else
         OZ)
             LOC_string="wttr.in/gold_coast"
             ;;
-        GC)
+        GC|Gold_Coast)
             LOC_string="wttr.in/gold_coast"
             LOCATION="OZ"
             ;;
-        BR)
+        BR|Brisbane)
             LOC_string="wttr.in/brisbane"
             ;;
-        SY)
+        SY|Sydney)
             LOC_string="wttr.in/sydney"
             ;;
         # California
-        LA)
+        LA|Los_Angeles)
             LOC_string="wttr.in/los_angeles"
             ;;
-        SF)
+        SF|San_Francisco)
             LOC_string="wttr.in/sf"
             ;;
-        MP)
+        MP|Menlo_Park)
             LOC_string="wttr.in/menlo_park"
             ;;
         # Rest of US
-        SL)
+        SL|SLC|Salt_Lake_City)
             LOC_string="wttr.in/salt_lake_city"
             ;;
-        DE)
+        DE|Denver)
             LOC_string="wttr.in/denver"
             ;;
-        CH)
+        CH|Chicago)
             LOC_string="wttr.in/chicago"
             ;;
-        NY)
+        NY|New_York)
             LOC_string="wttr.in/new_york"
             ;;
-        DC)
+        DC|Washington_DC)
             LOC_string="wttr.in/washington_dc"
             ;;
         # Europe
-        AM)
+        AM|Amsterdam)
             LOC_string="wttr.in/amsterdam"
             ;;
-        LO)
+        LO|London)
             LOC_string="wttr.in/london"
             ;;
-        PR)
+        PR|Prague)
             LOC_string="wttr.in/prague"
             ;;
-        PA)
+        PA|Paris)
             LOC_string="wttr.in/paris"
             ;;
-        BE)
+        BE|Berlin)
             LOC_string="wttr.in/berlin"
             ;;
         # Russia
-        MO)
+        MO|Moscow)
             LOC_string="wttr.in/moscow"
             ;;
-        NO)
+        NO|Novokuznetsk)
             LOC_string="wttr.in/novokuznetsk"
             ;;
         # Asia
-        IS)
+        IS|Istanbul)
             LOC_string="wttr.in/istanbul"
             ;;
-        TO)
+        TO|Tokyo)
             LOC_string="wttr.in/tokyo"
             ;;
-        KL)
+        KL|Kuala_Lumpur)
             LOC_string="wttr.in/kuala_lumpur"
             ;;
-        BJ)
+        BJ|Beijing)
             LOC_string="wttr.in/beijing"
             ;;
-        HK)
+        HK|Hongkong|Hong_Kong)
             LOC_string="wttr.in/hong_kong"
             ;;
         # Not yet a supported location
