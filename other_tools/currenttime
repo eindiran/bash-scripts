@@ -97,70 +97,70 @@ else
         OZ)
             TZ_string="TZ=Australia/Queensland"
             ;;
-        BR)
+        BR|Brisbane)
             TZ_string="TZ=Australia/Brisbane"
             ;;
-        SY)
+        SY|Sydney)
             TZ_string="TZ=Australia/Sydney"
             ;;
-        LA)
+        LA|Los_Angeles)
             TZ_string="TZ=America/Los_Angeles"
             ;;
-        SF)
+        SF|San_Francisco)
             TZ_string="TZ=America/Los_Angeles"
             ;;
-        MP)
+        MP|Menlo_Park)
             TZ_string="TZ=America/Los_Angeles"
             ;;
-        SL) # Salt Lake City
+        SL|SLC|Salt_Lake|Salt_Lake_City) # Salt Lake City
             TZ_string="TZ=Navajo"
             ;;
-        DE)
+        DE|Denver)
             TZ_string="TZ=America/Denver"
             ;;
-        CH)
+        CH|Chicago)
             TZ_string="TZ=America/Chicago"
             ;;
-        NY)
+        NY|New_York)
             TZ_string="TZ=America/New_York"
             ;;
-        DC)
+        DC|Washington_DC)
             TZ_string="TZ=America/New_York"
             ;;
-        AM)
+        AM|Amsterdam)
             TZ_string="TZ=Europe/Amsterdam"
             ;;
-        LO)
+        LO|London)
             TZ_string="TZ=Europe/London"
             ;;
-        TO)
+        TO|Tokyo)
             TZ_string="TZ=Asia/Tokyo"
             ;;
-        KL)
+        KL|Kuala_Lumpur)
             TZ_string="TZ=Asia/Kuala_Lumpur"
             ;;
-        NO)
+        NO|Novokuznetsk)
             TZ_string="TZ=Asia/Novokuznetsk"
             ;;
-        IS)
+        IS|Istanbul)
             TZ_string="TZ=Asia/Istanbul"
             ;;
-        BJ)
+        BJ|Beijing)
             TZ_string="TZ=PRC"
             ;;
-        HK)
+        HK|Hongkong|Hong_Kong)
             TZ_string="TZ=Hongkong"
             ;;
-        MO)
+        MO|Moscow)
             TZ_string="TZ=Europe/Moscow"
             ;;
-        PR)
+        PR|Prague)
             TZ_string="TZ=Europe/Prague"
             ;;
-        PA)
+        PA|Paris)
             TZ_string="TZ=Europe/Paris"
             ;;
-        BE)
+        BE|Berlin)
             TZ_string="TZ=Europe/Berlin"
             ;;
         *)
