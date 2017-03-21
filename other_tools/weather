@@ -23,6 +23,8 @@ TEMP=false
 LOCATION=""
 WEEK=false
 UNITS="?u"
+VERBOSE=true
+ART=true
 while [[ $# -gt 0 ]]
 do
     key="$1"
@@ -31,8 +33,8 @@ do
             # Print usage infor when a help flag is used
             # Once printed, exit
             printf "\nUsage:\tweather [--oz] [--temp | -t]\n\n"
-            printf "Args:\tnone: Print today's weather in MP\n" # TODO Update to reflect loc changes
-            printf "\t--loc || -l <LOCATION>: Print the weather near <LOCATION>\n"
+            printf "Args:\tnone: Print today's weather in MP\n"
+            printf "\t--loc || -l || in <LOCATION>: Print the weather near <LOCATION>\n"
             printf "\n\t<LOCATION> may be any of the following:\n"
             printf "\t{OZ, BR, SY, LA, SF, MP, SL, CH, NY, DC,"
             printf "\n\t AM, LO, TO, KL, NO, IS, BJ, HK, MO, PR,"
@@ -40,6 +42,8 @@ do
             printf "\tType 'weather --cities' for more information\n\n"
             printf "\t--temp || -t: Return only the temp\n"
             printf "\t--full || -f || --week || -w: Show the full week's weather\n"
+            printf "\t--less_verbose || -lv: Minimal verbosity in output\n"
+            printf "\t--no_art || -na: Print without ASCII art\n"
             printf "\t--help || -h: Print this message and exit\n\n"
             exit 0
             ;;
@@ -70,6 +74,15 @@ do
             # Set displayed units to metric/celsius
             UNITS="?m"
             ;;
+        --less_verbose|-lv)
+            # Mimimize printed output
+            VERBOSE=false
+            ;;
+        --no_art|-na)
+            # No ASCII art
+            # An option for those without an appreciation for the finer things
+            ART=false
+            ;;
         *)
             # Unkown option
             printf "Unknown Option: \"%s\"\n" "$key"
@@ -86,7 +99,8 @@ if [ "$LOCATION" = "" ] ; then
 else
     case $LOCATION in
         # Australia
-        OZ)
+        OZ|Australia) # Is "Australia" a weird alias for 'OZ', despite meaning precisely that?
+        # TODO Change relevant parts of usage/help/cities etc.
             LOC_string="wttr.in/gold_coast"
             ;;
         GC|Gold_Coast)
@@ -172,14 +186,25 @@ else
     esac
 fi
 
-LOC_string=$LOC_string+$UNITS
+LOC_string="$LOC_string"+$UNITS
+
+if [ $ART = false ] ; then
+    LOC_string="$LOC_string"+'0T' # Get a LOC_string w/o terminal colors
+    WEATHER_STR=$(curl -s -N "$LOC_string" | tail -n 5)
+    # shellcheck disable=SC2086
+    # Suppress shellcheck false-positives while linting this particular line
+    echo $WEATHER_STR | tr -d "[:punct:]" | awk -F'°' '{print $1 "°" substr($2, 0, 1)}'
+    exit 0
+fi
 
 if [ $TEMP = true ] ; then
-    currenttime -l $LOCATION --date --dow
-    curl -s $LOC_string | grep "°" | head -n 1 | awk {'print $(NF-1) " " $NF'}
+    # currenttime -l $LOCATION --date --dow # REVISIT: Do we want time printed here??
+    curl -s -N "$LOC_string" | grep "°" | head -n 1 | awk '{print $(NF-1) " " $NF}'
+elif [ $VERBOSE = false ] ; then
+    curl -s -N "$LOC_string" | head -n 7 | tail -n 5
 elif [ $WEEK = false ] ; then
     currenttime -l $LOCATION --date --dow
-    curl -s $LOC_string | head -n 7
+    curl -s -N "$LOC_string" | head -n 7
 else
-    curl -s $LOC_string
+    curl -s -N "$LOC_string" | head -n -2
 fi
