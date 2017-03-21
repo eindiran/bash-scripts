@@ -1,0 +1,210 @@
+#!/bin/bash
+# weather
+# Fetch the local weather
+# Author: <eindira@promptu.com>
+# Usage:    weather [--oz] [--temp | -t]
+#
+# Args: none: Print today's weather in MP
+#       --loc || -l <LOCATION>: Print the weather near <LOCATION>
+#
+#       <LOCATION> may be any of the following:
+#       {OZ, BR, SY, LA, SF, MP, SL, CH, NY, DC,
+#        AM, LO, TO, KL, NO, IS, BJ, HK, MO, PR, 
+#        PA, BE}
+#
+#       Type 'weather --cities' for more information
+#
+#       --temp || -t: Return only the temp
+#       --full || -f || --week || -w: Show the full week's weather
+#       --help || -h: Print this message and exit
+
+#Init variables to hold flag values
+TEMP=false
+LOCATION=""
+WEEK=false
+UNITS="?u"
+VERBOSE=true
+ART=true
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+    case $key in
+        --help|-h)
+            # Print usage infor when a help flag is used
+            # Once printed, exit
+            printf "\nUsage:\tweather [--oz] [--temp | -t]\n\n"
+            printf "Args:\tnone: Print today's weather in MP\n"
+            printf "\t--loc || -l || in <LOCATION>: Print the weather near <LOCATION>\n"
+            printf "\n\t<LOCATION> may be any of the following:\n"
+            printf "\t{OZ, BR, SY, LA, SF, MP, SL, CH, NY, DC,"
+            printf "\n\t AM, LO, TO, KL, NO, IS, BJ, HK, MO, PR,"
+            printf "\n\t PA, BE}\n\n"
+            printf "\tType 'weather --cities' for more information\n\n"
+            printf "\t--temp || -t: Return only the temp\n"
+            printf "\t--full || -f || --week || -w: Show the full week's weather\n"
+            printf "\t--less_verbose || -lv: Minimal verbosity in output\n"
+            printf "\t--no_art || -na: Print without ASCII art\n"
+            printf "\t--help || -h: Print this message and exit\n\n"
+            exit 0
+            ;;
+        --cities)
+            printf "weather -- Available Cities\n"
+            printf "===========================\n"
+            printf "The available cities are:\n"
+            printf "\tOZ:Queensland, BR:Brisbane, SY:Sydney, LA:LA, SF:San Francisco\n"
+            printf "\tMP:Menlo Park, SL: Salt Lake City, CH:Chicago, NY:New York, DC:Washington DC\n"
+            printf "\tAM:Amsterdam, LO:London, TO:Tokyo, KL:Kuala Lumpur, NO:Novokuznetsk, IS:Istanbul\n"
+            printf "\tBJ:Beijing, HK:Hong Kong, MO:Moscow, PR:Prague, PA:Paris, BE:Berlin\n"
+            exit 0
+            ;;
+        --loc|-l)
+            # Set location argument to the two letter code given immediately after
+            shift
+            LOCATION="$1"
+            ;;
+        --temp|-t)
+            # Set TEMP to true
+            TEMP=true
+            ;;
+        --full|-f|--week|-w)
+            # Set WEEK to true
+            WEEK=true
+            ;;
+        --metric|-m|--celsius|-c)
+            # Set displayed units to metric/celsius
+            UNITS="?m"
+            ;;
+        --less_verbose|-lv)
+            # Mimimize printed output
+            VERBOSE=false
+            ;;
+        --no_art|-na)
+            # No ASCII art
+            # An option for those without an appreciation for the finer things
+            ART=false
+            ;;
+        *)
+            # Unkown option
+            printf "Unknown Option: \"%s\"\n" "$key"
+            ;;
+    esac
+    shift
+done
+
+LOC_string=""
+
+if [ "$LOCATION" = "" ] ; then
+    LOC_string="wttr.in/menlo_park"
+    LOCATION="MP"
+else
+    case $LOCATION in
+        # Australia
+        OZ|Australia) # Is "Australia" a weird alias for 'OZ', despite meaning precisely that?
+        # TODO Change relevant parts of usage/help/cities etc.
+            LOC_string="wttr.in/gold_coast"
+            ;;
+        GC|Gold_Coast)
+            LOC_string="wttr.in/gold_coast"
+            LOCATION="OZ"
+            ;;
+        BR|Brisbane)
+            LOC_string="wttr.in/brisbane"
+            ;;
+        SY|Sydney)
+            LOC_string="wttr.in/sydney"
+            ;;
+        # California
+        LA|Los_Angeles)
+            LOC_string="wttr.in/los_angeles"
+            ;;
+        SF|San_Francisco)
+            LOC_string="wttr.in/sf"
+            ;;
+        MP|Menlo_Park)
+            LOC_string="wttr.in/menlo_park"
+            ;;
+        # Rest of US
+        SL|SLC|Salt_Lake_City)
+            LOC_string="wttr.in/salt_lake_city"
+            ;;
+        DE|Denver)
+            LOC_string="wttr.in/denver"
+            ;;
+        CH|Chicago)
+            LOC_string="wttr.in/chicago"
+            ;;
+        NY|New_York)
+            LOC_string="wttr.in/new_york"
+            ;;
+        DC|Washington_DC)
+            LOC_string="wttr.in/washington_dc"
+            ;;
+        # Europe
+        AM|Amsterdam)
+            LOC_string="wttr.in/amsterdam"
+            ;;
+        LO|London)
+            LOC_string="wttr.in/london"
+            ;;
+        PR|Prague)
+            LOC_string="wttr.in/prague"
+            ;;
+        PA|Paris)
+            LOC_string="wttr.in/paris"
+            ;;
+        BE|Berlin)
+            LOC_string="wttr.in/berlin"
+            ;;
+        # Russia
+        MO|Moscow)
+            LOC_string="wttr.in/moscow"
+            ;;
+        NO|Novokuznetsk)
+            LOC_string="wttr.in/novokuznetsk"
+            ;;
+        # Asia
+        IS|Istanbul)
+            LOC_string="wttr.in/istanbul"
+            ;;
+        TO|Tokyo)
+            LOC_string="wttr.in/tokyo"
+            ;;
+        KL|Kuala_Lumpur)
+            LOC_string="wttr.in/kuala_lumpur"
+            ;;
+        BJ|Beijing)
+            LOC_string="wttr.in/beijing"
+            ;;
+        HK|Hongkong|Hong_Kong)
+            LOC_string="wttr.in/hong_kong"
+            ;;
+        # Not yet a supported location
+        *)
+            printf "Unknown Location: \"%s\"\n" "$LOCATION"
+            exit 1
+            ;;
+    esac
+fi
+
+LOC_string="$LOC_string"+$UNITS
+
+if [ $ART = false ] ; then
+    LOC_string="$LOC_string"+'0T' # Get a LOC_string w/o terminal colors
+    WEATHER_STR=$(curl -s -N "$LOC_string" | tail -n 5)
+    # shellcheck disable=SC2086
+    # Suppress shellcheck false-positives while linting this particular line
+    echo $WEATHER_STR | tr -d "[:punct:]" | awk -F'°' '{print $1 "°" substr($2, 0, 1)}'
+    exit 0
+fi
+
+if [ $TEMP = true ] ; then
+    # currenttime -l $LOCATION --date --dow # REVISIT: Do we want time printed here??
+    curl -s -N "$LOC_string" | grep "°" | head -n 1 | awk '{print $(NF-1) " " $NF}'
+elif [ $VERBOSE = false ] ; then
+    curl -s -N "$LOC_string" | head -n 7 | tail -n 5
+elif [ $WEEK = false ] ; then
+    currenttime -l $LOCATION --date --dow
+    curl -s -N "$LOC_string" | head -n 7
+else
+    curl -s -N "$LOC_string" | head -n -2
+fi
