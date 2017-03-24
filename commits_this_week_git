@@ -1,0 +1,4 @@
+#! /bin/bash
+
+user="$1"
+git log --author="$user" --since="$(date --date="7 days ago" -I)"
