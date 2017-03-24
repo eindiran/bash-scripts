@@ -21,6 +21,8 @@ usage() {
 }
 
 date_to_int() {
+    # shellcheck disable=SC2001
+    # Get shellcheck to not suggest ${variable//search/replace} format instead of sed
     echo "$1" | sed -e 's/-//g'
 }
 
@@ -70,6 +72,20 @@ print_full_to_file() {
     # $3 = output filename
 }
 
+generate_weekly_report() {
+    if [ -z "$1" ] ; then
+        echo "No user recieved in fn generate_weekly_report. Cannot continue."
+        exit 1
+    fi
+    if [[ "$DEBUG" = true ]] ; then
+            printf "\nDebug statement for fn generate_weekly_report:\n\t\$1 (user) = %s\n" "$1"
+            printf "\t\$2 (num_commits) = %s\n" "$2"
+    fi
+    p4 changes -u "$1" | head -n "$2" | awk '{print $2}' | xargs p4 describe -s - > "$REPORTS_DIR"/tmp.report.p4."$1"."$(date -I)"
+    sed -e 's/^Change/=========================================================================\nChange/g' "$REPORTS_DIR"/tmp.report.p4."$1"."$(date -I)" > "$REPORTS_DIR"/report.p4."$1"."$(date -I)"
+    rm -f "$REPORTS_DIR"/tmp.report.p4."$1"."$(date -I)"
+}
+
 get_commit_num() {
     # $1 = <USER>
     commits=0
@@ -80,10 +96,10 @@ get_commit_num() {
             commits=$(( commits + 1 ))
         fi
     done
-    if [[ $DEBUG = true ]] ; then
-        printf "\nDebug statement for fn get_commit_num:\n\t\$commits = %d\n\n" $commits # DEBUG
+    if [[ "$DEBUG" = true ]] ; then
+        printf "\nDebug statement for fn get_commit_num:\n\t\$commits = %d\n\n" "$commits" # DEBUG
     fi
-    printf "%d\n" $commits
+    printf "%d\n" "$commits"
 }
 
 main() {
