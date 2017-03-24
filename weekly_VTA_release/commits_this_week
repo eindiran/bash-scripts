@@ -6,7 +6,7 @@
 
 DEBUG=false # Set this to true while debugging, false otherwise.
 LONG=false
-REPORT=false
+REPORTS_DIR=$HOME/weekly_p4_report
 
 usage() {
     printf "\ncommits_this_week"
@@ -15,120 +15,115 @@ usage() {
     printf "\np4 made by a particular user over the last week."
     printf "\nUsage:"
     printf "\n-------------------------------------------------------------------------------"
-    printf "\nLong Flags:\tcommits_this_week [--help] --user <U> [--file <F>] [--debug]"
-    printf "\nShort Flags:\tcommits_this_week [-h] -u <U> [-f <F>] [-db]\n\n"
+    printf "\nLong Flags:\tcommits_this_week [--help] --user <U> [--file <F>] [--debug] [--long] [--report]"
+    printf "\nShort Flags:\tcommits_this_week [-h] -u <U> [-f <F>] [-db] [-l] [-r]\n\n"
     exit 0
 }
 
 date_to_int() {
-    echo $1 | sed -e 's/-//g'
+    # shellcheck disable=SC2001
+    # Get shellcheck to not suggest ${variable//search/replace} format instead of sed
+    echo "$1" | sed -e 's/-//g'
 }
 
 print_summary_stdout() {
-    if [ -z "$1" ] ; then
-        echo "No user recieved in fn print_summary_stdout. Cannot continue."
-        exit 1
-    fi
     if [[ $DEBUG = true ]] ; then
-        printf "\nDebug statement for fn print_summary_to_stdout:\n\t\$1 (user) = %s\n" $1
-        printf "\t\$2 (num_commits) = %s\n" $2
+        printf "\nDebug statement for fn print_summary_to_stdout:\n\t\$1 (user) = %s\n" "$1"
+        printf "\t\$2 (num_commits) = %s\n" "$2"
     fi
-    p4 changes -u $1 | head -n $2
+    p4 changes -u "$1" | head -n "$2"
     # $1 = <USER>
     # $2 = num_commits
 }
 
 print_full_stdout() {
-    if [ -z "$1" ] ; then
-        echo "No user recieved in fn print_full_stdout. Cannot continue."
-        exit 1
-    fi
     if [[ $DEBUG = true ]] ; then
-        printf "\nDebug statement for fn print_full_stdout:\n\t\$1 (user) = %s\n" $1
-        printf "\t\$2 (num_commits) = %s\n" $2
+        printf "\nDebug statement for fn print_full_stdout:\n\t\$1 (user) = %s\n" "$1"
+        printf "\t\$2 (num_commits) = %s\n" "$2"
     fi
-    p4 changes -u $1 | head -n $2 | awk {'print $2'} | xargs p4 describe -s | sed -e '/^\s*$/d'
+    p4 changes -u "$1" | head -n "$2" | awk '{print $2}' | xargs p4 describe -s -
     # $1 = <USER>
     # $2 = num_commits
     # Note that the call to 'p4 describe' uses the '-s' flag to suppress the diff of each file
-    # which would usually be wayyyy to much information to take in. Then sed removes all the black/ws-only
-    # lines, for improved compact-ness.
+    # which would usually be wayyyy to much information to take in.
 }
 
 print_summary_to_file() {
-    if [ -z "$1" ] ; then
-        echo "No user recieved in fn print_summary_to_file. Cannot continue."
-        exit 1
-    fi
     if [[ $DEBUG = true ]] ; then
-        printf "\nDebug statement for fn print_summary_to_file:\n\t\$1 (user) = %s\n" $1
-        printf "\t\$2 (num_commits) = %s\n" $2
-        printf "\t\$3 (output_filename) = %s\n\n" $3
+        printf "\nDebug statement for fn print_summary_to_file:\n\t\$1 (user) = %s\n" "$1"
+        printf "\t\$2 (num_commits) = %s\n" "$2"
+        printf "\t\$3 (output_filename) = %s\n\n" "$3"
     fi
-    p4 changes -u $1 | head -n $2 > $3
+    p4 changes -u "$1" | head -n "$2" > "$3"
     # $1 = <USER>
     # $2 = num_commits
     # $3 = output filename
 }
 
-generate_full_weekly_p4_report() {
+print_full_to_file() {
+    if [[ $DEBUG = true ]] ; then
+        printf "\nDebug statement for fn print_full_to_file:\n\t\$1 (user) = %s\n" "$1"
+        printf "\t\$2 (num_commits) = %s\n" "$2"
+        printf "\t\$3 (output_filename) = %s\n\n" "$3"
+    fi
+    p4 changes -u "$1" | head -n "$2" | awk '{print $2}' | xargs p4 describe -s - > "$3"
+    # $1 = <USER>
+    # $2 = num_commits
+    # $3 = output filename
+}
+
+generate_weekly_report() {
     if [ -z "$1" ] ; then
-        echo "No user recieved in fn generate_full_weekly_p4_report. Cannot continue."
+        echo "No user recieved in fn generate_weekly_report. Cannot continue."
         exit 1
     fi
-    if [[ $DEBUG = true ]] ; then
-        printf "\nDebug statement for fn print_summary_to_file:\n\t\$1 (user) = %s\n" $1
-        printf "\t\$2 (num_commits) = %s\n" $2
+    if [[ "$DEBUG" = true ]] ; then
+            printf "\nDebug statement for fn generate_weekly_report:\n\t\$1 (user) = %s\n" "$1"
+            printf "\t\$2 (num_commits) = %s\n" "$2"
     fi
-    p4 changes -u $1 | head -n $2 | awk {'print $2'} | xargs p4 describe -s > tmp.report.p4.$1.$(date -I)
-    sed -e 's/^Change/=========================================================================\nChange/g' tmp.report.p4.$1.$(date -I) > report.p4.$1.$(date -I)
-    rm -f tmp.report.p4.$1.$(date -I)
+    p4 changes -u "$1" | head -n "$2" | awk '{print $2}' | xargs p4 describe -s - > "$REPORTS_DIR"/tmp.report.p4."$1"."$(date -I)"
+    sed -e 's/^Change/=========================================================================\nChange/g' "$REPORTS_DIR"/tmp.report.p4."$1"."$(date -I)" > "$REPORTS_DIR"/report.p4."$1"."$(date -I)"
+    rm -f "$REPORTS_DIR"/tmp.report.p4."$1"."$(date -I)"
 }
 
 get_commit_num() {
     # $1 = <USER>
-    if [ -z "$1" ] ; then
-        echo "No user recieved in fn get_commit_num. Cannot continue."
-        exit 1
-    fi
     commits=0
-    for i in $(p4 changes -u $1 | awk {'print $4'} | sed -e 's/\//-/g'); do
-        comp_i=$(date_to_int $i)
-        comp_week_ago=$(date_to_int $(date --date="7 days ago" -I))
-        if [ $comp_i -ge $comp_week_ago ] ; then
+    for i in $(p4 changes -u "$1" | awk '{print $4}' | sed -e 's/\//-/g'); do
+        comp_i="$(date_to_int "$i")"
+        comp_week_ago="$(date_to_int "$(date --date="7 days ago" -I)")"
+        if [ "$comp_i" -ge "$comp_week_ago" ] ; then
             commits=$(( commits + 1 ))
         fi
     done
-    if [[ $DEBUG = true ]] ; then
-        printf "\nDebug statement for fn get_commit_num:\n\t\$commits = %d\n\n" $commits # DEBUG
+    if [[ "$DEBUG" = true ]] ; then
+        printf "\nDebug statement for fn get_commit_num:\n\t\$commits = %d\n\n" "$commits" # DEBUG
     fi
-    printf "%d\n" $commits
+    printf "%d\n" "$commits"
 }
 
 main() {
     # $1 = <USER>
     # $2 = <FILENAME> [optional]
     user=$1
-    if [ -z "$user" ] ; then
-        echo "No user recieved in fn main. Cannot continue."
-        exit 1
-    fi
-    commits=$(get_commit_num $user)
+    commits="$(get_commit_num "$user")"
     # echo $commits
-    if [[ $REPORT = true ]] ; then
-        generate_full_weekly_p4_report $user $commits
-    elif [ $# -eq 1 ] ; then
-        if [[ $LONG = true ]] ; then
-            print_full_stdout $user $commits
+    if [ $# -eq 1 ] ; then
+        if [[ "$LONG" = true ]] ; then
+            print_full_stdout "$user" "$commits"
         else
             echo # Add newlines before and after printing to stdout
             # for purely aesthetic reasons
-            print_summary_stdout $user $commits
+            print_summary_stdout "$user" "$commits"
             echo
         fi
     else
         filename=$2
-        print_summary_to_file $user $commits $filename
+        if [[ "$LONG" = true ]] ; then
+            print_full_to_file "$user" "$commits" "$filename"
+        else
+            print_summary_to_file "$user" "$commits" "$filename"
+        fi
     fi
     exit 0
 }
@@ -136,10 +131,10 @@ main() {
 eindiran_orig() {
     # Original version of this program which worked only for myself.
     commits=0
-    for i in $(p4 changes -u eindiran | awk {'print $4'} | sed -e 's/\//-/g'); do
-        comp_i=$(date_to_int $i)
-        comp_week_ago=$(date_to_int $(date --date="7 days ago" -I))
-        if [ $comp_i -ge $comp_week_ago ] ; then
+    for i in $(p4 changes -u eindiran | awk '{print $4}' | sed -e 's/\//-/g'); do
+        comp_i="$(date_to_int "$i")"
+        comp_week_ago="$(date_to_int "$(date --date="7 days ago" -I)")"
+        if [ "$comp_i" -ge "$comp_week_ago" ] ; then
             commits=$(( commits + 1 ))
         fi
     done
@@ -190,8 +185,9 @@ do
             LONG=true
             ;;
         --report|-r)
-            # Generates a full report in current directory
-            REPORT=true
+            # Write a report
+            LONG=true
+            FILENAME=$REPORTS_DIR/$(date -I).report
             ;;
         *)
             # Unknown option...
@@ -201,9 +197,4 @@ do
     shift
 done
 
-if [ -z "$USER" ] ; then
-    echo "No user recieved. Cannot continue."
-    exit 1
-fi
-
-main $USER $FILENAME # Invoke main
+main "$USER" "$FILENAME" # DEBUG
