@@ -2,14 +2,14 @@
 # currenttime
 # Print the current time [default = converted to the 12-hour clock.]
 # Author: <eindiran@promptu.com>
-# Usage:  currenttime [--loc LOC] [--date] [--dow] [--24]
+# Usage:  currenttime [-l LOC] [-d] [--dow] [--24H]
 #         currenttime --help || currenttime -h
 #
 # Args:   none: Return the local time
 #         --loc || -l <LOCATION>: Return the time in the specified location
 #         <LOCATION> may be any of the following: {OZ, MP, CH, NY, AM, LO, TO}
 #         --date || -d: Append the current date to the printed message
-#         --24: Use 24-hour time
+#         --24H: Use 24-hour time
 #         --dow: Append the current day of the week to the printed message
 #         --help || -h: Print this message and exit
 
@@ -26,6 +26,7 @@ do
     case $key in
         --help|-h)
             # Print usage info when a help flag is used
+            # TODO Update yet again...
             printf "\nUsage:\tcurrenttime [--oz]\n\tcurrenttime --help || currenttime -h\n\n"
             printf "Args:\tnone: Return the local time\n"
             printf "\t--loc || -l <LOCATION>: Return the time in the specified location\n"
@@ -35,12 +36,12 @@ do
             printf "\n\t PA, BE}\n"
             printf "\n\tFor more information, use the --timezones or -tz flags\n"
             printf "\t--date || -d: Append the current date to the printed message\n"
-            printf "\t--24: Use 24-hour time\n"
+            printf "\t--24H: Use 24-hour time\n"
             printf "\t--dow: Append the current day of the week to the printed message\n"
             printf "\t--help || -h: Print this message and exit\n\n"
             exit 0
             ;;
-        --timezones|-tz)
+        --timezones|-tz|--cities|-c)
             # Print timezone info when the timezone/tz flag is used
             printf "currenttime -- Available Timezones\n"
             printf "==================================\nThe timezones are as follows:\n"
@@ -50,11 +51,11 @@ do
             printf "\tBJ:Beijing, HK:Hong Kong, MO:Moscow, PR:Prague, PA:Paris, BE:Berlin\n\n"
             exit 0
             ;;
-        --24)
+        --24H|-24)
             # Set TWENTYFOUR to true if the --24 flag is found
             TWENTYFOUR=true
             ;;
-        --loc|-l)
+        --loc|-l|"in")
             # Set location argument to the two letter code given immediately after
             # The current set of codes:
             # {OZ:Queensland, BR:Brisbane, SY:Sydney, LA:LA, SF:San Francisco, MP:Menlo Park,
