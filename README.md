@@ -1,6 +1,6 @@
-# /usr/local/sbin/SCRIPTS
-Collection of system tools, useful bash scripts and other stuff located (on my various machines) in 
-/usr/local/sbin/. Seeing this description really makes you say "Ahh, what a refreshingly creative name!", doesn't it?
+# sbin-scripts
+Collection of system tools and bash scripts for various tasks which I keep stashed in 
+/usr/local/sbin/ across my various machines. This repo allows me to quickly install the scripts onto a new machine so that I can preserve my workflow, which has come to rely on a lot of these tools.
 
 ## Directory Structure
 My /usr/local/sbin directory is entirely flat, but to organize the scripts
@@ -8,26 +8,15 @@ according to their relationships to one another, I've split the top level direct
 two straightforward directories.
 
 ### Top-Level Directories
-  1) /usr/local/sbin/p4/ (which is straight forward enough!)
+  1) /usr/local/sbin/p4/
      and
-  2) /usr/local/sbin/other-tools/ (which was the least descriptive thing anyone
-     has ever called anyone or anything in any language)
+  2) /usr/local/sbin/other-tools/ (for _all_ things unrelated to Perforce)
 
 ### Descending into "other_tools" 
-Beneath /usr/local/sbin/other-tools/, there will be a growing network of tools, each named in
-a far more descriptive way than "other-tools" was. For example, the two scripts 'currenttime' and 'weather' will be in
-the subdirectory of /usr/local/sbin/other-tools/ titled "location_based_scripts". This captures important info about the 
-scripts and their similarities but is also general enough to allow new scripts to quickly find the right home.)
+Beneath /usr/local/sbin/other-tools/, there is a network of tools (often connected to one another). They are stored in directories tied to how they relate to each other. For example, the two scripts 'currenttime' and 'weather' will be in
+the subdirectory titled "location_based_scripts".
 
 Additionally, there will be a "sys_tools" directory, which will contain 'sysinfo' and 'up', more coming soon.
-
-### Soon to be a third top-level directory?
-Due to a small amount of development that I have been doing on some non-Promptu, non-Sitrus related tasks related to gaming,
-I plan on adding an additional "top-level" directory in the git filestrucure entitled './games/', you've got 
-${GIT_WORK_TREE}/usr/local/sbin/games/.
-This could be a touch confusing to those intimately familiar with \*nix family file naming conventions, as games are supposed
-to fall under  as most, if not all, of the old Linux-only, "old-skool kool" type games (usually text games). That won't 
-happen for a while, so nothin' to fret about yet.
 
 # Contents
 Right now, usr_local_sbin_scripts contains 10 scripts in all (with about 4 to 5 requiring a lot of effort
