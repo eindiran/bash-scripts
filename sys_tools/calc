@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+#===============================================================================
+#
+#          FILE: calc
+# 
+#         USAGE: ./calc "<bc-syntax expression to eval>"
+# 
+#   DESCRIPTION: Takes an expression using bc syntax and uses bc to evaluate.
+# 
+#        AUTHOR: Elliott Indiran <eindiran@promptu.com>
+#  ORGANIZATION: Promptu Systems Corporation
+#       CREATED: 10/16/2017
+#      REVISION: v1.0.0
+#===============================================================================
+
+set -o errexit  # Exit on a command failing
+set -o errtrace # Exit when a function or subshell has an error
+set -o nounset  # Treat unset variables as an error
+set -o pipefail # Return error code for first failed command in pipe
+# set -o xtrace # Trace what is run: use during debugging
+
+BC_EXPR="$1"
+echo "$BC_EXPR" | bc
