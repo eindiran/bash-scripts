@@ -1,0 +1,38 @@
+#!/bin/bash
+# linthawk
+# A simple script for linting awk scripts which runs on top of GNU awk's --lint option
+
+INPUT_FILE=''
+
+usage() {
+    printf "\nUsage:\tlinthawk --help || linthawk --file <awk-script-to-lint>\n"
+    printf "--help: print this message and exit."
+}
+
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+        --help|-h)
+            # Print usage info when help flag is used.
+            usage
+            exit 0
+            ;;
+        --file|-f)
+            # Input file to lint
+            shift
+            INPUT_FILE="$1"
+            ;;
+        *)
+            # Unknown option
+            printf "Unknown option: \"%s\"\n" "$key"
+            ;;
+    esac
+    shift
+done
+
+if [ "$INPUT_FILE" = "" ] ; then
+    printf "No script given to lint. Exiting.\n"
+    exit 1
+else
+    gawk --lint --source 'BEGIN { exit(0) } END { exit(0) }' --file "$INPUT_FILE"
+fi
