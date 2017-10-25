@@ -1,5 +1,5 @@
 #!/bin/bash
-# commits_this_week
+# p4-commits
 # Print out the commits to Perforce made by a particular user over the last week
 # Author: <eindiran@promptu.com>
 # Date: 2017-03-16
@@ -9,14 +9,14 @@ LONG=false
 REPORTS_DIR=$HOME/weekly_p4_report
 
 usage() {
-    printf "\ncommits_this_week"
+    printf "\np4-commits"
     printf "\n-------------------------------------------------------------------------------"
     printf "\nA tool to print out the commits to"
     printf "\np4 made by a particular user over the last week."
     printf "\nUsage:"
     printf "\n-------------------------------------------------------------------------------"
-    printf "\nLong Flags:\tcommits_this_week [--help] --user <U> [--file <F>] [--debug] [--long] [--report]"
-    printf "\nShort Flags:\tcommits_this_week [-h] -u <U> [-f <F>] [-db] [-l] [-r]\n\n"
+    printf "\nLong Flags:\tp4-commits [--help] --user <U> [--file <F>] [--debug] [--long] [--report]"
+    printf "\nShort Flags:\tp4-commit [-h] -u <U> [-f <F>] [-db] [-l] [-r]\n\n"
     exit 0
 }
 
