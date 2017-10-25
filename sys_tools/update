@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+#===============================================================================
+#
+#          FILE: update
+# 
+#   DESCRIPTION: Script to run via cron that auto updates and informs you via
+#                email.
+# 
+#        AUTHOR: Elliott Indiran <eindiran@promptu.com>
+#         OTHER: Inspiration for this script from:
+#                https://ubuntuforums.org/archive/index.php/t-1009225.html
+#          CRON: "0 5 * * * sudo /usr/local/sbin/update >/dev/null 2>&1"
+#  ORGANIZATION: Promptu Systems Corporation
+#       CREATED: 10/25/2017
+#      REVISION: v1.0.0
+#===============================================================================
+
+set -o errexit  # Exit on a command failing
+set -o errtrace # Exit when a function or subshell has an error
+set -o nounset  # Treat unset variables as an error
+set -o pipefail # Return error code for first failed command in pipe
+
+TMP_FILE=$(/bin/mktemp -t)
+EMAIL_ADDRESS=eindiran@promptu.com # Replace with desired email address
+USERNAME=$(logname)
+
+{
+    echo return-path: $EMAIL_ADDRESS
+    echo for: $EMAIL_ADDRESS
+    echo from: $EMAIL_ADDRESS
+    echo to: $EMAIL_ADDRESS
+    echo subject: Automatic Package Update via apt-get
+    echo Hello there "$USERNAME"... this is an informational message:
+    echo
+    echo An update + upgrade process was run via apt-get at time: "$(/bin/date +%c)"
+    echo
+    echo -n "Result: "
+} >> "$TMP_FILE"
+
+apt-get -qy update > /dev/null
+apt-get -qy dist-upgrade >> "$TMP_FILE"
+echo >> "$TMP_FILE"
+sendmail -t < "$TMP_FILE"
+rm "$TMP_FILE"
+exit 0
