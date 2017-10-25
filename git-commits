@@ -1,4 +1,6 @@
 #! /bin/bash
+# git-commits
+# Mimic basic functionality of p4-commits script for git
 
 user="$1"
 git log --author="$user" --since="$(date --date="7 days ago" -I)"
