@@ -1,34 +1,13 @@
-# sbin-scripts
+# shell-scripts
 Collection of system tools and bash scripts for various tasks which I keep stashed in 
-/usr/local/sbin/ across my various machines. This repo allows me to quickly install the scripts onto a new machine so that I can preserve my workflow, which has come to rely on a lot of these tools.
+/usr/local/sbin/ across my various machines. This repo allows me to quickly install the scripts onto a new machine so that I can preserve my workflow.
 
-## Directory Structure
-My /usr/local/sbin directory is entirely flat, but to organize the scripts
-according to their relationships to one another, I've split the top level directory into
-two straightforward directories.
-
-### Top-Level Directories
-  1) /usr/local/sbin/p4/
-     and
-  2) /usr/local/sbin/other-tools/ (for _all_ things unrelated to Perforce)
-
-### Descending into "other_tools" 
-Beneath /usr/local/sbin/other-tools/, there is a network of tools (often connected to one another). They are stored in directories tied to how they relate to each other. For example, the two scripts 'currenttime' and 'weather' will be in
-the subdirectory titled "location_based_scripts".
-
-Additionally, there will be a "sys_tools" directory, which will contain 'sysinfo' and 'up', more coming soon.
-
-# Contents
-Right now, usr_local_sbin_scripts contains 10 scripts in all (with about 4 to 5 requiring a lot of effort
-and thought to produce.
-### Location Based
-The first two scripts can be found in "other_tools/location_based_scripts:
-  
+## Location Based
   1) currenttime -- My first significantly-sized bash tool to build/maintain. Its initial implementation focused on quickly returning the localtime in 12h time. Over time, the tool has grown a LOT in functionality, scope and reliability. The printed output of 'usage()' is far too expansive to replicate here: instead type "currenttime -h" or "currenttime --help" to display help info.
   
   2) weather -- a fairly straighforward tool to check the weather of a city (which comes from a set of cities I personally care about -- if you want other cities added, please file an issue and mark it 'enhancement'. I will be sure to add support for your desired city.). To see weather's options, etc. type "weather --help" or "weather -h"
 
-### Unix system tools
+## Unix system tools
 The next two scripts are general purpose tools while using almost any \*nix flavor, including all GNU/Linux and OSX!
 Hopefully the BSDs are coming soon.
   
@@ -36,7 +15,7 @@ Hopefully the BSDs are coming soon.
   
   4) up -- this developed a bit like many things do: someone does some task x with time cost t1 over and over again; they then generate idea y; implementing y has a time cost arbitrarily larger than t1. But after performing task x enough times, y pays for itself. Up just cd's up N directories if you run it as 'up N'.
 
-### Perforce tools
+## Perforce tools
 These following scripts don't currently have directory structure at all beyond falling into the big-ole 'p4' directory. The first four all perform operations on p4 directories in order to do tasks it is difficult to do quickly from the command line with p4. Other than the first, I have only kept the following p4 scripts out of reasons of posterity -- wrangling p4 is easier than it seemed at the time I wrote these scripts.
 
   5) p4-cd-add -- tool to add support for recursively adding files in current directory to perforce
@@ -47,7 +26,11 @@ These following scripts don't currently have directory structure at all beyond f
   
   9) p4-size -- get the size of a non-local repository
 
-### VTA Team Meeting Report Generator
-The final script here is quite an interesting little tool.
+## VTA Team Meeting Report Generator
+Generate team reports using p4.
   
-  10) commits_this_week -- most useful as a way to instantly generate a full listing of everything modified by a particular user on perforce, including their commit message, their relevant bugs, etc. This can be invoked with the right flags to build a "report" which can be changed minimally to be entirely sufficient for speaking at the VTA team meetings.
+  10) p4-commits -- most useful as a way to instantly generate a full listing of everything modified by a particular user on perforce, including their commit message, their relevant bugs, etc. This can be invoked with the right flags to build a "report" which can be changed minimally to be entirely sufficient for speaking at the VTA team meetings.
+  11) git-commits -- Mimics the functionality of 'p4-commits' for git.
+
+## Other Scripts
+  12) linthawk -- Simple script which adds a nice layer over gawk's built in linter for ease of use.
