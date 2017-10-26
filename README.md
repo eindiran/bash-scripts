@@ -34,3 +34,5 @@ Generate team reports using p4.
 
 ## Other Scripts
   12) linthawk -- Simple script which adds a nice layer over gawk's built in linter for ease of use.
+  13) calc -- layer over bc to make calls to bc easier.
+  14) update -- intended to be run by a cron job; automatically updates any system where the package manager is apt-get.
