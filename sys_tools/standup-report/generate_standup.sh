@@ -27,6 +27,7 @@ DATE=$(date +%m-%d-%Y)  # "01/29/2018"
 FILENAME="daily-reports/standup-report-$DATE.md"
 TEMPLATE="StandupReportTemplate.md"
 HEADER_LINE="# Standup report for ${Days[$(date +%u)]}, $DATE"
+PRINTER="Xerox-WorkCentre-7345"
 
 while [[ $# -gt 0 ]]; do
     key="$1"
@@ -41,6 +42,10 @@ while [[ $# -gt 0 ]]; do
         --print|-p)
             PDF=true
             PRINT=true
+            ;;
+        --printer)
+            shift
+            PRINTER="$1"
             ;;
         --pdf)
             PDF=true
@@ -82,7 +87,7 @@ if [ "$EDIT" = true ] ; then
         wkhtmltopdf "${FILENAME%.*}.html" "${FILENAME%.*}.pdf"
         if [ "$PRINT" = true ] ; then
             # print the PDF
-            lp -d Xerox-WorkCentre-7345 "${FILENAME%.*}.pdf"
+            lp -d "$PRINTER" "${FILENAME%.*}.pdf"
         fi
     fi
 fi
