@@ -21,6 +21,7 @@
 #Init variables to hold flag values
 TEMP=false
 LOCATION=""
+LOCATION_STRING=""
 WEEK=false
 UNITS="?u"
 VERBOSE=true
@@ -33,7 +34,7 @@ do
             # Print usage infor when a help flag is used
             # Once printed, exit
             printf "\nUsage:\tweather [--oz] [--temp | -t]\n\n"
-            printf "Args:\tnone: Print today's weather in MP\n"
+            printf "Args:\tnone: Print today's weather in MP\n" # TODO Update to reflect loc changes
             printf "\t--loc || -l || in <LOCATION>: Print the weather near <LOCATION>\n"
             printf "\n\t<LOCATION> may be any of the following:\n"
             printf "\t{OZ, BR, SY, LA, SF, MP, SL, CH, NY, DC,"
@@ -91,106 +92,197 @@ do
     shift
 done
 
-LOC_string=""
+LOC_URL=""
 
 if [ "$LOCATION" = "" ] ; then
-    LOC_string="wttr.in/menlo_park"
+    LOC_URL="wttr.in/menlo_park"
     LOCATION="MP"
+    LOCATION_STRING="Menlo Park, California"
 else
     case $LOCATION in
         # Australia
-        OZ|Australia) # Is "Australia" a weird alias for 'OZ', despite meaning precisely that?
-        # TODO Change relevant parts of usage/help/cities etc.
-            LOC_string="wttr.in/gold_coast"
+        OZ)
+            LOC_URL="wttr.in/gold_coast"
+            LOCATION_STRING="Gold Coast, Australia"
             ;;
         GC|Gold_Coast)
-            LOC_string="wttr.in/gold_coast"
+            LOC_URL="wttr.in/gold_coast"
+            LOCATION_STRING="Gold Coast, Australia"
             LOCATION="OZ"
             ;;
         BR|Brisbane)
-            LOC_string="wttr.in/brisbane"
+            LOC_URL="wttr.in/brisbane"
+            LOCATION_STRING="Brisbane, Australia"
             ;;
         SY|Sydney)
-            LOC_string="wttr.in/sydney"
+            LOC_URL="wttr.in/sydney"
+            LOCATION_STRING="Sydney, Australia"
             ;;
         # California
         LA|Los_Angeles)
-            LOC_string="wttr.in/los_angeles"
+            LOC_URL="wttr.in/los_angeles"
+            LOCATION_STRING="Los Angeles, California"
             ;;
         SF|San_Francisco)
-            LOC_string="wttr.in/sf"
+            LOC_URL="wttr.in/sf"
+            LOCATION_STRING="San Francisco, California"
+            ;;
+        BK|Berkeley)
+            LOC_URL="wttr.in/berkeley"
+            LOCATION_STRING="Berkeley, California"
+            ;;
+        OAK|Oakland)
+            LOC_URL="wttr.in/oakland"
+            LOCATION_STRING="Oakland, California"
+            ;;
+        SJ|San_Jose)
+            LOC_URL="wttr.in/san_jose"
+            LOCATION_STRING="San Jose, California"
             ;;
         MP|Menlo_Park)
-            LOC_string="wttr.in/menlo_park"
+            LOC_URL="wttr.in/menlo_park"
+            LOCATION_STRING="Menlo Park, California"
+            ;;
+        TR|Torrance)
+            LOC_URL="wttr.in/torrance"
+            LOCATION_STRING="Torrance, California"
+            ;;
+        SD|San_Diego)
+            LOC_URL="wttr.in/san_diego"
+            LOCATION_STRING="San Diego, California"
+            ;;
+        VTA|Ventura)
+            LOC_URL="wttr.in/ventura"
+            LOCATION_STRING="Ventura, California"
+            ;;
+        SB|Santa_Barbara)
+            LOC_URL="wttr.in/santa_barbara"
+            LOCATION_STRING="Santa_Barbara, California"
+            ;;
+        OJ|Ojai)
+            LOC_URL="wttr.in/ojai_california"
+            LOCATION_STRING="Ojai, California"
             ;;
         # Rest of US
         SL|SLC|Salt_Lake_City)
-            LOC_string="wttr.in/salt_lake_city"
+            LOC_URL="wttr.in/salt_lake_city"
+            LOCATION_STRING="Salt Lake City, Utah"
             ;;
         DE|Denver)
-            LOC_string="wttr.in/denver"
+            LOC_URL="wttr.in/denver"
+            LOCATION_STRING="Denver, Colorado"
             ;;
         CH|Chicago)
-            LOC_string="wttr.in/chicago"
+            LOC_URL="wttr.in/chicago"
+            LOCATION_STRING="Chicago, Illinois"
             ;;
         NY|New_York)
-            LOC_string="wttr.in/new_york"
+            LOC_URL="wttr.in/new_york"
+            LOCATION_STRING="New York, New York"
             ;;
         DC|Washington_DC)
-            LOC_string="wttr.in/washington_dc"
+            LOC_URL="wttr.in/washington_dc"
+            LOCATION_STRING="Washington DC"
+            ;;
+        SEA|Seattle)
+            LOC_URL="wttr.in/seattle"
+            LOCATION_STRING="Seattle, Washinton"
+            ;;
+        PDX|Portland)
+            LOC_URL="wttr.in/portland"
+            LOCATION_STRING="Portland, Oregon"
+            ;;
+        DB|Daytona_Beach)
+            LOC_URL="wttr.in/daytona_beach"
+            LOCATION_STRING="Daytona Beach, Florida"
+            ;;
+        OR|Orlando)
+            LOC_URL="wttr.in/orlando"
+            LOCATION_STRING="Orlando, Florida"
+            ;;
+        MI|Miami)
+            LOC_URL="wttr.in/miami"
+            LOCATION_STRING="Miami, Florida"
             ;;
         # Europe
         AM|Amsterdam)
-            LOC_string="wttr.in/amsterdam"
+            LOC_URL="wttr.in/amsterdam"
+            LOCATION_STRING="Amsterdam, Netherlands"
+            ;;
+        GL|Glasgow)
+            LOC_URL="wttr.in/glasgow"
+            LOCATION_STRING="Glasgow, United Kingdom"
             ;;
         LO|London)
-            LOC_string="wttr.in/london"
+            LOC_URL="wttr.in/london"
+            LOCATION_STRING="London, UK"
             ;;
         PR|Prague)
-            LOC_string="wttr.in/prague"
+            LOC_URL="wttr.in/prague"
+            LOCATION_STRING="Prague, Czech Republic"
             ;;
         PA|Paris)
-            LOC_string="wttr.in/paris"
+            LOC_URL="wttr.in/paris"
+            LOCATION_STRING="Paris, France"
             ;;
         BE|Berlin)
-            LOC_string="wttr.in/berlin"
+            LOC_URL="wttr.in/berlin"
+            LOCATION_STRING="Berlin, Germany"
             ;;
         # Russia
         MO|Moscow)
-            LOC_string="wttr.in/moscow"
+            LOC_URL="wttr.in/moscow"
+            LOCATION_STRING="Moscow, Russia"
+            ;;
+        NB|Novosibirsk)
+            LOC_URL="wttr.in/novosibirsk"
+            LOCATION_STRING="Novosibirsk, Russia"
             ;;
         NO|Novokuznetsk)
-            LOC_string="wttr.in/novokuznetsk"
+            LOC_URL="wttr.in/novokuznetsk"
+            LOCATION_STRING="Novokuznetsk, Russia"
             ;;
         # Asia
         IS|Istanbul)
-            LOC_string="wttr.in/istanbul"
+            LOC_URL="wttr.in/istanbul"
+            LOCATION_STRING="Istanbul, Turkey"
             ;;
         TO|Tokyo)
-            LOC_string="wttr.in/tokyo"
+            LOC_URL="wttr.in/tokyo"
+            LOCATION_STRING="Tokyo, Japan"
             ;;
         KL|Kuala_Lumpur)
-            LOC_string="wttr.in/kuala_lumpur"
+            LOC_URL="wttr.in/kuala_lumpur"
+            LOCATION_STRING="Kuala Lumpur, Malaysia"
+            ;;
+        SG|Singapore)
+            LOC_URL="wtrr.in/singapore"
+            LOCATION_STRING="Singapore, Singapore"
             ;;
         BJ|Beijing)
-            LOC_string="wttr.in/beijing"
+            LOC_URL="wttr.in/beijing"
+            LOCATION_STRING="Beijing, China"
             ;;
         HK|Hongkong|Hong_Kong)
-            LOC_string="wttr.in/hong_kong"
+            LOC_URL="wttr.in/hong_kong"
+            LOCATION_STRING="Hong Kong"
             ;;
         # Not yet a supported location
         *)
-            printf "Unknown Location: \"%s\"\n" "$LOCATION"
-            exit 1
+            LOCATION_URL_SLUG="$(echo "$LOCATION" | tr "[:upper:]" "[:lower:]" | sed 's/ /_/')"
+            LOC_URL="wttr.in/$LOCATION_URL_SLUG"
+            LOCATION_STRING="$LOCATION"
             ;;
     esac
 fi
 
-LOC_string="$LOC_string"+$UNITS
+LOC_URL="$LOC_URL"+$UNITS
+
+echo
 
 if [ $ART = false ] ; then
-    LOC_string="$LOC_string"+'0T' # Get a LOC_string w/o terminal colors
-    WEATHER_STR=$(curl -s -N "$LOC_string" | tail -n 5)
+    LOC_URL="$LOC_URL"+'0T' # Get a LOC_URL w/o terminal colors
+    WEATHER_STR=$(curl -s -N "$LOC_URL" | tail -n 5)
     # shellcheck disable=SC2086
     # Suppress shellcheck false-positives while linting this particular line
     echo $WEATHER_STR | tr -d "[:punct:]" | awk -F'°' '{print $1 "°" substr($2, 0, 1)}'
@@ -198,13 +290,15 @@ if [ $ART = false ] ; then
 fi
 
 if [ $TEMP = true ] ; then
-    # currenttime -l $LOCATION --date --dow # REVISIT: Do we want time printed here??
-    curl -s -N "$LOC_string" | grep "°" | head -n 1 | awk '{print $(NF-1) " " $NF}'
+    curl -s -N "$LOC_URL" | grep "°" | head -n 1 | awk '{print $(NF-1) " " $NF}'
 elif [ $VERBOSE = false ] ; then
-    curl -s -N "$LOC_string" | head -n 7 | tail -n 5
+    curl -s -N "$LOC_URL" | head -n 7 | tail -n 5
 elif [ $WEEK = false ] ; then
     currenttime -l $LOCATION --date --dow
-    curl -s -N "$LOC_string" | head -n 7
+    echo "Location: $LOCATION_STRING"
+    curl -s -N "$LOC_URL" | head -n 7 | tail -n +2
 else
-    curl -s -N "$LOC_string" | head -n -2
+    curl -s -N "$LOC_URL" | head -n -2
 fi
+
+echo
