@@ -20,8 +20,9 @@
 
 #Init variables to hold flag values
 TEMP=false
-LOCATION=""
-LOCATION_STRING=""
+LOC_URL="$WEATHER_LOCATION_URL"
+LOCATION="$WEATHER_LOCATION"
+LOCATION_STRING="$WEATHER_LOCATION_STRING"
 WEEK=false
 UNITS="?u"
 VERBOSE=true
@@ -92,189 +93,181 @@ do
     shift
 done
 
-LOC_URL=""
-
-if [ "$LOCATION" = "" ] ; then
-    LOC_URL="wttr.in/menlo_park"
-    LOCATION="MP"
-    LOCATION_STRING="Menlo Park, California"
-else
-    case $LOCATION in
-        # Australia
-        OZ)
-            LOC_URL="wttr.in/gold_coast"
-            LOCATION_STRING="Gold Coast, Australia"
-            ;;
-        GC|Gold_Coast)
-            LOC_URL="wttr.in/gold_coast"
-            LOCATION_STRING="Gold Coast, Australia"
-            LOCATION="OZ"
-            ;;
-        BR|Brisbane)
-            LOC_URL="wttr.in/brisbane"
-            LOCATION_STRING="Brisbane, Australia"
-            ;;
-        SY|Sydney)
-            LOC_URL="wttr.in/sydney"
-            LOCATION_STRING="Sydney, Australia"
-            ;;
-        # California
-        LA|Los_Angeles)
-            LOC_URL="wttr.in/los_angeles"
-            LOCATION_STRING="Los Angeles, California"
-            ;;
-        SF|San_Francisco)
-            LOC_URL="wttr.in/sf"
-            LOCATION_STRING="San Francisco, California"
-            ;;
-        BK|Berkeley)
-            LOC_URL="wttr.in/berkeley"
-            LOCATION_STRING="Berkeley, California"
-            ;;
-        OAK|Oakland)
-            LOC_URL="wttr.in/oakland"
-            LOCATION_STRING="Oakland, California"
-            ;;
-        SJ|San_Jose)
-            LOC_URL="wttr.in/san_jose"
-            LOCATION_STRING="San Jose, California"
-            ;;
-        MP|Menlo_Park)
-            LOC_URL="wttr.in/menlo_park"
-            LOCATION_STRING="Menlo Park, California"
-            ;;
-        TR|Torrance)
-            LOC_URL="wttr.in/torrance"
-            LOCATION_STRING="Torrance, California"
-            ;;
-        SD|San_Diego)
-            LOC_URL="wttr.in/san_diego"
-            LOCATION_STRING="San Diego, California"
-            ;;
-        VTA|Ventura)
-            LOC_URL="wttr.in/ventura"
-            LOCATION_STRING="Ventura, California"
-            ;;
-        SB|Santa_Barbara)
-            LOC_URL="wttr.in/santa_barbara"
-            LOCATION_STRING="Santa_Barbara, California"
-            ;;
-        OJ|Ojai)
-            LOC_URL="wttr.in/ojai_california"
-            LOCATION_STRING="Ojai, California"
-            ;;
-        # Rest of US
-        SL|SLC|Salt_Lake_City)
-            LOC_URL="wttr.in/salt_lake_city"
-            LOCATION_STRING="Salt Lake City, Utah"
-            ;;
-        DE|Denver)
-            LOC_URL="wttr.in/denver"
-            LOCATION_STRING="Denver, Colorado"
-            ;;
-        CH|Chicago)
-            LOC_URL="wttr.in/chicago"
-            LOCATION_STRING="Chicago, Illinois"
-            ;;
-        NY|New_York)
-            LOC_URL="wttr.in/new_york"
-            LOCATION_STRING="New York, New York"
-            ;;
-        DC|Washington_DC)
-            LOC_URL="wttr.in/washington_dc"
-            LOCATION_STRING="Washington DC"
-            ;;
-        SEA|Seattle)
-            LOC_URL="wttr.in/seattle"
-            LOCATION_STRING="Seattle, Washinton"
-            ;;
-        PDX|Portland)
-            LOC_URL="wttr.in/portland"
-            LOCATION_STRING="Portland, Oregon"
-            ;;
-        DB|Daytona_Beach)
-            LOC_URL="wttr.in/daytona_beach"
-            LOCATION_STRING="Daytona Beach, Florida"
-            ;;
-        OR|Orlando)
-            LOC_URL="wttr.in/orlando"
-            LOCATION_STRING="Orlando, Florida"
-            ;;
-        MI|Miami)
-            LOC_URL="wttr.in/miami"
-            LOCATION_STRING="Miami, Florida"
-            ;;
-        # Europe
-        AM|Amsterdam)
-            LOC_URL="wttr.in/amsterdam"
-            LOCATION_STRING="Amsterdam, Netherlands"
-            ;;
-        GL|Glasgow)
-            LOC_URL="wttr.in/glasgow"
-            LOCATION_STRING="Glasgow, United Kingdom"
-            ;;
-        LO|London)
-            LOC_URL="wttr.in/london"
-            LOCATION_STRING="London, UK"
-            ;;
-        PR|Prague)
-            LOC_URL="wttr.in/prague"
-            LOCATION_STRING="Prague, Czech Republic"
-            ;;
-        PA|Paris)
-            LOC_URL="wttr.in/paris"
-            LOCATION_STRING="Paris, France"
-            ;;
-        BE|Berlin)
-            LOC_URL="wttr.in/berlin"
-            LOCATION_STRING="Berlin, Germany"
-            ;;
-        # Russia
-        MO|Moscow)
-            LOC_URL="wttr.in/moscow"
-            LOCATION_STRING="Moscow, Russia"
-            ;;
-        NB|Novosibirsk)
-            LOC_URL="wttr.in/novosibirsk"
-            LOCATION_STRING="Novosibirsk, Russia"
-            ;;
-        NO|Novokuznetsk)
-            LOC_URL="wttr.in/novokuznetsk"
-            LOCATION_STRING="Novokuznetsk, Russia"
-            ;;
-        # Asia
-        IS|Istanbul)
-            LOC_URL="wttr.in/istanbul"
-            LOCATION_STRING="Istanbul, Turkey"
-            ;;
-        TO|Tokyo)
-            LOC_URL="wttr.in/tokyo"
-            LOCATION_STRING="Tokyo, Japan"
-            ;;
-        KL|Kuala_Lumpur)
-            LOC_URL="wttr.in/kuala_lumpur"
-            LOCATION_STRING="Kuala Lumpur, Malaysia"
-            ;;
-        SG|Singapore)
-            LOC_URL="wtrr.in/singapore"
-            LOCATION_STRING="Singapore, Singapore"
-            ;;
-        BJ|Beijing)
-            LOC_URL="wttr.in/beijing"
-            LOCATION_STRING="Beijing, China"
-            ;;
-        HK|Hongkong|Hong_Kong)
-            LOC_URL="wttr.in/hong_kong"
-            LOCATION_STRING="Hong Kong"
-            ;;
-        # Not yet a supported location
-        *)
-            LOCATION_URL_SLUG="$(echo "$LOCATION" | tr "[:upper:]" "[:lower:]" | sed 's/ /_/')"
-            LOC_URL="wttr.in/$LOCATION_URL_SLUG"
-            LOCATION_STRING="$LOCATION"
-            ;;
-    esac
-fi
+case $LOCATION in
+    # Australia
+    OZ)
+        LOC_URL="wttr.in/gold_coast"
+        LOCATION_STRING="Gold Coast, Australia"
+        ;;
+    GC|Gold_Coast)
+        LOC_URL="wttr.in/gold_coast"
+        LOCATION_STRING="Gold Coast, Australia"
+        LOCATION="OZ"
+        ;;
+    BR|Brisbane)
+        LOC_URL="wttr.in/brisbane"
+        LOCATION_STRING="Brisbane, Australia"
+        ;;
+    SY|Sydney)
+        LOC_URL="wttr.in/sydney"
+        LOCATION_STRING="Sydney, Australia"
+        ;;
+    # California
+    LA|Los_Angeles)
+        LOC_URL="wttr.in/los_angeles"
+        LOCATION_STRING="Los Angeles, California"
+        ;;
+    SF|San_Francisco)
+        LOC_URL="wttr.in/sf"
+        LOCATION_STRING="San Francisco, California"
+        ;;
+    BK|Berkeley)
+        LOC_URL="wttr.in/berkeley"
+        LOCATION_STRING="Berkeley, California"
+        ;;
+    OAK|Oakland)
+        LOC_URL="wttr.in/oakland"
+        LOCATION_STRING="Oakland, California"
+        ;;
+    SJ|San_Jose)
+        LOC_URL="wttr.in/san_jose"
+        LOCATION_STRING="San Jose, California"
+        ;;
+    MP|Menlo_Park)
+        LOC_URL="wttr.in/menlo_park"
+        LOCATION_STRING="Menlo Park, California"
+        ;;
+    TR|Torrance)
+        LOC_URL="wttr.in/torrance"
+        LOCATION_STRING="Torrance, California"
+        ;;
+    SD|San_Diego)
+        LOC_URL="wttr.in/san_diego"
+        LOCATION_STRING="San Diego, California"
+        ;;
+    VTA|Ventura)
+        LOC_URL="wttr.in/ventura"
+        LOCATION_STRING="Ventura, California"
+        ;;
+    SB|Santa_Barbara)
+        LOC_URL="wttr.in/santa_barbara"
+        LOCATION_STRING="Santa_Barbara, California"
+        ;;
+    OJ|Ojai)
+        LOC_URL="wttr.in/ojai_california"
+        LOCATION_STRING="Ojai, California"
+        ;;
+    # Rest of US
+    SL|SLC|Salt_Lake_City)
+        LOC_URL="wttr.in/salt_lake_city"
+        LOCATION_STRING="Salt Lake City, Utah"
+        ;;
+    DE|Denver)
+        LOC_URL="wttr.in/denver"
+        LOCATION_STRING="Denver, Colorado"
+        ;;
+    CH|Chicago)
+        LOC_URL="wttr.in/chicago"
+        LOCATION_STRING="Chicago, Illinois"
+        ;;
+    NY|New_York)
+        LOC_URL="wttr.in/new_york"
+        LOCATION_STRING="New York, New York"
+        ;;
+    DC|Washington_DC)
+        LOC_URL="wttr.in/washington_dc"
+        LOCATION_STRING="Washington DC"
+        ;;
+    SEA|Seattle)
+        LOC_URL="wttr.in/seattle"
+        LOCATION_STRING="Seattle, Washinton"
+        ;;
+    PDX|Portland)
+        LOC_URL="wttr.in/portland"
+        LOCATION_STRING="Portland, Oregon"
+        ;;
+    DB|Daytona_Beach)
+        LOC_URL="wttr.in/daytona_beach"
+        LOCATION_STRING="Daytona Beach, Florida"
+        ;;
+    OR|Orlando)
+        LOC_URL="wttr.in/orlando"
+        LOCATION_STRING="Orlando, Florida"
+        ;;
+    MI|Miami)
+        LOC_URL="wttr.in/miami"
+        LOCATION_STRING="Miami, Florida"
+        ;;
+    # Europe
+    AM|Amsterdam)
+        LOC_URL="wttr.in/amsterdam"
+        LOCATION_STRING="Amsterdam, Netherlands"
+        ;;
+    GL|Glasgow)
+        LOC_URL="wttr.in/glasgow"
+        LOCATION_STRING="Glasgow, United Kingdom"
+        ;;
+    LO|London)
+        LOC_URL="wttr.in/london"
+        LOCATION_STRING="London, UK"
+        ;;
+    PR|Prague)
+        LOC_URL="wttr.in/prague"
+        LOCATION_STRING="Prague, Czech Republic"
+        ;;
+    PA|Paris)
+        LOC_URL="wttr.in/paris"
+        LOCATION_STRING="Paris, France"
+        ;;
+    BE|Berlin)
+        LOC_URL="wttr.in/berlin"
+        LOCATION_STRING="Berlin, Germany"
+        ;;
+    # Russia
+    MO|Moscow)
+        LOC_URL="wttr.in/moscow"
+        LOCATION_STRING="Moscow, Russia"
+        ;;
+    NB|Novosibirsk)
+        LOC_URL="wttr.in/novosibirsk"
+        LOCATION_STRING="Novosibirsk, Russia"
+        ;;
+    NO|Novokuznetsk)
+        LOC_URL="wttr.in/novokuznetsk"
+        LOCATION_STRING="Novokuznetsk, Russia"
+        ;;
+    # Asia
+    IS|Istanbul)
+        LOC_URL="wttr.in/istanbul"
+        LOCATION_STRING="Istanbul, Turkey"
+        ;;
+    TO|Tokyo)
+        LOC_URL="wttr.in/tokyo"
+        LOCATION_STRING="Tokyo, Japan"
+        ;;
+    KL|Kuala_Lumpur)
+        LOC_URL="wttr.in/kuala_lumpur"
+        LOCATION_STRING="Kuala Lumpur, Malaysia"
+        ;;
+    SG|Singapore)
+        LOC_URL="wtrr.in/singapore"
+        LOCATION_STRING="Singapore, Singapore"
+        ;;
+    BJ|Beijing)
+        LOC_URL="wttr.in/beijing"
+        LOCATION_STRING="Beijing, China"
+        ;;
+    HK|Hongkong|Hong_Kong)
+        LOC_URL="wttr.in/hong_kong"
+        LOCATION_STRING="Hong Kong"
+        ;;
+    # Not yet a supported location
+    *)
+        LOCATION_URL_SLUG="$(echo "$LOCATION" | tr "[:upper:]" "[:lower:]" | sed 's/ /_/')"
+        LOC_URL="wttr.in/$LOCATION_URL_SLUG"
+        LOCATION_STRING="$LOCATION"
+        ;;
+esac
 
 LOC_URL="$LOC_URL"+$UNITS
 
